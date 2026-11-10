@@ -1,51 +1,130 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101012">
-<title>Varethia — World of a Thousand Elements</title>
+<meta name="description" content="Enter Varethia: a dark fantasy world of more than a thousand elements, dangerous curses, independent lives and unforgiving consequences.">
+<title>Varethia — The World of a Thousand Elements</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="world" aria-hidden="true">
-  <div class="sky"></div><div class="moon"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div>
-  <div class="castle">
-    <div class="keep"><i></i><i></i><i></i></div>
-    <div class="tower tower-a"><b></b></div><div class="tower tower-b"><b></b></div>
-    <div class="wall"></div><div class="gate"></div>
-    <div class="windows"></div>
-  </div>
-  <div class="mist mist-a"></div><div class="mist mist-b"></div><div class="foreground"></div>
-  <div class="embers" id="embers"></div><div class="runes" aria-hidden="true">ᚱ　ᚦ　ᛟ　ᚨ　ᛞ　ᚾ　ᚱ</div>
-  <div class="lightning"></div>
+<div class="scene" aria-hidden="true">
+ <div class="sky"></div><div class="moon"></div><div class="mountain back"></div><div class="mountain mid"></div>
+ <div class="castle">
+  <div class="castle-shadow"></div><div class="tower left"><i></i></div><div class="tower right"><i></i></div>
+  <div class="keep"><i></i><i></i><i></i></div><div class="wall"></div><div class="gate"></div>
+ </div>
+ <div class="fog fog-one"></div><div class="fog fog-two"></div><div class="rune-field">ᚱ　ᚦ　ᛟ　ᚨ　ᛞ　ᚾ　ᚱ</div><div id="embers"></div><div class="ground"></div>
 </div>
-<div class="vignette"></div>
-<header class="topbar">
-  <div class="sigil">V</div><div><div class="brand-small">THE CHRONICLES OF</div><div class="brand">VARETHIA</div></div>
-  <div class="top-meta"><span class="status-dot"></span> WORLD ARCHIVE <span class="separator">/</span> BUILD 0.1.0</div>
+<div class="shade"></div>
+<header class="site-header">
+ <a class="identity" href="#home" aria-label="Varethia home"><span class="sigil">V</span><span><small>THE CHRONICLES OF</small><b>VARETHIA</b></span></a>
+ <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">☰</button>
+ <nav class="main-nav" id="mainNav">
+  <a href="#world">THE WORLD</a><a href="#elements">ELEMENTS</a><a href="#curses">CURSES</a><a href="#living-world">LIVING WORLD</a><a href="#visuals">VISUALS</a>
+ </nav>
+ <button class="header-cta" data-open-character>CREATE CHARACTER <span>↗</span></button>
 </header>
 <main>
-  <section class="hero" id="mainMenu">
-    <div class="eyebrow"><span></span> A WORLD OF A THOUSAND ELEMENTS <span></span></div>
-    <h1>VARETHIA</h1>
-    <p class="tagline">POWER IS A GIFT. <em>SURVIVAL IS EARNED.</em></p>
-    <div class="title-rule"><span>✦</span></div>
-    <nav class="menu" aria-label="Main menu">
-      <button class="menu-item selected" data-action="create"><span class="menu-icon">✧</span><span><strong>Begin Your Chronicle</strong><small>Create a character · Campaign remains paused</small></span><b>01</b></button>
-      <button class="menu-item" data-action="lore"><span class="menu-icon">▤</span><span><strong>World Encyclopedia</strong><small>Elements, curses, kingdoms and history</small></span><b>02</b></button>
-      <button class="menu-item" data-action="factions"><span class="menu-icon">⚑</span><span><strong>Factions & Rumors</strong><small>Discover the powers shaping Varethia</small></span><b>03</b></button>
-      <button class="menu-item" data-action="settings"><span class="menu-icon">⚙</span><span><strong>Settings</strong><small>Display, sound and accessibility</small></span><b>04</b></button>
-    </nav>
-    <div class="bottom-note"><span class="line"></span> YOUR STORY HAS NOT YET BEEN WRITTEN <span class="line"></span></div>
-  </section>
-  <section class="panel hidden" id="detailPanel" aria-live="polite">
-    <button class="back" id="backButton">← BACK TO MAIN MENU</button>
-    <div id="panelContent"></div>
-  </section>
+<section class="hero section-wrap" id="home">
+ <div class="hero-copy">
+  <div class="eyebrow"><span></span> A WORLD OF A THOUSAND ELEMENTS <span></span></div>
+  <h1>VARETHIA</h1>
+  <p class="hero-sub">POWER IS A GIFT. <em>SURVIVAL IS EARNED.</em></p>
+  <p class="hero-desc">A living dark-fantasy world where elemental gifts shape destiny, curses carry a price, and every choice leaves a mark.</p>
+  <div class="hero-actions"><button class="primary-btn" data-open-character>BEGIN YOUR CHRONICLE <b>→</b></button><a class="text-link" href="#world">DISCOVER THE WORLD ↓</a></div>
+  <div class="hero-stats"><div><b>1,000+</b><span>ELEMENTS</span></div><div><b>83</b><span>KINGDOMS</span></div><div><b>09</b><span>CONTINENTS</span></div></div>
+ </div>
+ <div class="hero-seal"><div class="seal-ring"><span>✦</span><b>NO CHOSEN ONE</b><small>NO GUARANTEED MERCY</small><span>✦</span></div></div>
+ <div class="scroll-cue">SCROLL TO EXPLORE <span>↓</span></div>
+</section>
+<section class="ticker" aria-label="World principles"><span>ELEMENTAL INHERITANCE</span><i>✦</i><span>ANCIENT CURSES</span><i>✦</i><span>INDEPENDENT NPCS</span><i>✦</i><span>PERMANENT CONSEQUENCES</span><i>✦</i><span>NO PLOT ARMOR</span></section>
+<section class="content-section section-wrap" id="world">
+ <div class="section-heading"><div class="eyebrow">01 / THE SETTING</div><h2>A WORLD THAT<br><em>DOES NOT WAIT FOR YOU.</em></h2><p>Varethia exists beyond the player's view. Kingdoms bargain and betray, merchants trade, armies march, and ordinary people live their lives whether you are watching or not.</p></div>
+ <div class="world-grid">
+  <article class="feature-card feature-large"><div class="card-art continent-art"><span class="art-label">THE KNOWN WORLD</span><div class="map-mark">✦</div></div><div class="card-body"><span class="kicker">A VAST, CONNECTED WORLD</span><h3>Nine continents. Eighty-three kingdoms.</h3><p>Independent settlements, frontier territories, ancient ruins, magical forests, oceans, deserts and cursed lands create a world larger than any one person's ambitions.</p></div></article>
+  <article class="feature-card"><div class="mini-art citadel-art"><span>ROYAL HOUSES</span></div><div class="card-body"><h3>Power has a price.</h3><p>Rulers recruit the gifted. Rivals conspire. Assassins accept contracts. Institutions may protect, study or exploit the powerful.</p></div></article>
+  <article class="feature-card"><div class="mini-art ruin-art"><span>LOST CIVILIZATIONS</span></div><div class="card-body"><h3>History is buried.</h3><p>Forgotten civilizations left behind forbidden knowledge, sealed places and mysteries that can change the balance of power.</p></div></article>
+ </div>
+</section>
+<section class="content-section section-wrap" id="elements">
+ <div class="section-heading"><div class="eyebrow">02 / ELEMENTAL INHERITANCE</div><h2>MORE THAN A THOUSAND<br><em>WAYS TO CHANGE THE WORLD.</em></h2><p>Most people are born with one natural element. Rarity does not equal mastery: discipline, knowledge, experience and circumstance decide what a person can actually do.</p></div>
+ <div class="element-ledger">
+  <div class="ledger-intro"><span class="big-number">1,000<span>+</span></span><span class="ledger-caption">DOCUMENTED &<br>UNDISCOVERED TYPES</span><div class="ledger-note">Ordinarily, one person. One element. No easy exceptions.</div></div>
+  <div class="rarity-list">
+   <div class="rarity-row"><span>COMMON</span><div class="bar"><i style="width:100%"></i></div><b>400</b></div>
+   <div class="rarity-row"><span>UNCOMMON</span><div class="bar"><i style="width:62.5%"></i></div><b>250</b></div>
+   <div class="rarity-row"><span>RARE</span><div class="bar"><i style="width:45%"></i></div><b>180</b></div>
+   <div class="rarity-row"><span>EXTREMELY RARE</span><div class="bar"><i style="width:25%"></i></div><b>100</b></div>
+   <div class="rarity-row"><span>LEGENDARY</span><div class="bar"><i style="width:12.5%"></i></div><b>50</b></div>
+   <div class="rarity-row"><span>MYTHICAL</span><div class="bar"><i style="width:4.75%"></i></div><b>19+</b></div>
+   <p class="fine-print">The named rarity groups account for 999 entries; the 1,000+ world catalogue includes undiscovered, disputed and unclassified types.</p>
+  </div>
+ </div>
+ <div class="element-examples">
+  <div class="element-group"><span class="group-label">COMMON SIGHT</span><h3>Known forces</h3><p>Fire · Water · Earth · Wind · Ice · Lightning · Sand · Wood · Metal · Smoke · Mud · Stone</p></div>
+  <div class="element-group"><span class="group-label">RARE & FORBIDDEN</span><h3>Unusual forces</h3><p>Gravity · Blood · Shadow · Sound · Crystal · Magnetism · Poison · Lava · Bone · Light</p></div>
+  <div class="element-group"><span class="group-label">LEGEND & MYTH</span><h3>World-shaping forces</h3><p>Time · Space · Void · Soul · Dimension · Celestial · Creation · Existence · Infinity · Reality · Origin</p></div>
+ </div>
+</section>
+<section class="curse-section" id="curses">
+ <div class="section-wrap">
+  <div class="section-heading"><div class="eyebrow">03 / THE OTHER GIFT</div><h2>NOT EVERY POWER<br><em>WANTS TO BE YOURS.</em></h2><p>Curses exist outside the elemental laws. Some protect. Some corrupt. Some think for themselves. None should be judged by their name alone.</p></div>
+  <div class="curse-grid">
+   <article><span class="curse-icon">✧</span><h3>Beneficial</h3><p>Unusual abilities with a condition, limitation or hidden cost.</p></article>
+   <article><span class="curse-icon">☠</span><h3>Hostile</h3><p>Forces that slowly damage the bearer or the people around them.</p></article>
+   <article><span class="curse-icon">◌</span><h3>Dormant</h3><p>Remain silent until a specific event, place or choice awakens them.</p></article>
+   <article><span class="curse-icon">◈</span><h3>Sentient</h3><p>Possess memory, personality and sometimes an agenda of their own.</p></article>
+   <article><span class="curse-icon">⌘</span><h3>Bloodline</h3><p>Pass through families, shaping generations in unexpected ways.</p></article>
+   <article><span class="curse-icon">⟁</span><h3>Ancient</h3><p>Remain from beings and civilizations older than recorded history.</p></article>
+  </div>
+ </div>
+</section>
+<section class="content-section section-wrap" id="spellcraft">
+ <div class="section-heading"><div class="eyebrow">04 / THE ART OF SPELLCRAFT</div><h2>POWER REQUIRES<br><em>PRECISION.</em></h2><p>A spell is a procedure, not a wish. Pronunciation, gestures, energy control, concentration and knowledge all matter. A mistake can be fatal.</p></div>
+ <div class="spell-layout"><div class="spell-visual"><div class="spell-circle"><span>ᚨ</span><i></i><b></b></div><div class="spell-caption">A RITUAL IS ONLY AS STRONG AS ITS WEAKEST STEP.</div></div><div class="spell-steps">
+  <div><b>01</b><span><strong>Preparation</strong><small>Materials, intent and understanding.</small></span></div>
+  <div><b>02</b><span><strong>Formation</strong><small>Correct words, gestures and sequence.</small></span></div>
+  <div><b>03</b><span><strong>Control</strong><small>Direct and sustain magical energy.</small></span></div>
+  <div class="danger-step"><b>!</b><span><strong>Miscast & backlash</strong><small>Loss of control, internal injury, collateral damage — or death.</small></span></div>
+ </div></div>
+ <div class="warning-strip"><span>⚠</span><p><b>FORBIDDEN DOES NOT MEAN IMPOSSIBLE.</b> It means the consequences may be permanent, and the knowledge may be guarded for a reason.</p></div>
+</section>
+<section class="content-section section-wrap" id="living-world">
+ <div class="section-heading"><div class="eyebrow">05 / INDEPENDENT LIVES</div><h2>NPCS ARE PEOPLE.<br><em>NOT PROPS.</em></h2><p>Every significant character has a life beyond the player: work, relationships, goals, fears, flaws and decisions. Most have ordinary histories. A few carry truly dark pasts.</p></div>
+ <div class="npc-grid">
+  <article class="npc-card"><div class="npc-portrait portrait-blacksmith"><span>THE CRAFTSMAN</span></div><div class="npc-info"><h3>Garrick Vale</h3><span class="npc-meta">43 · Blacksmith · Earth</span><p>Suspicious, hardworking and impatient. Has run his forge for eighteen years and wants to expand the business.</p><div class="traits"><i>PROUD</i><i>CAUTIOUS</i><i>AMBITIOUS</i></div></div></article>
+  <article class="npc-card"><div class="npc-portrait portrait-healer"><span>THE HEALER</span></div><div class="npc-info"><h3>Elira Venn</h3><span class="npc-meta">31 · Healer · Water</span><p>Patient, observant and protective. Runs a small practice and quietly owes money to a local merchant.</p><div class="traits"><i>COMPASSIONATE</i><i>OBSERVANT</i><i>PROUD</i></div></div></article>
+  <article class="npc-card npc-unknown"><div class="npc-portrait portrait-hood"><span>THE UNKNOWN</span></div><div class="npc-info"><h3>Unrecorded lives</h3><span class="npc-meta">Countless · All walks of life</span><p>Some seek wealth. Some seek safety. Some want power and nothing else. Their stories continue off-screen.</p><div class="traits"><i>INDEPENDENT</i><i>UNPREDICTABLE</i></div></div></article>
+ </div>
+ <div class="autonomy-band"><div><b>THE WORLD KEEPS MOVING</b><span>NPCs can work, travel, train, fall in love, form rivalries, betray allies, become stronger or die while you are elsewhere.</span></div><div><b>MEMORY HAS WEIGHT</b><span>People remember what you do. Trust, loyalty, fear, resentment and reputation change over time.</span></div></div>
+</section>
+<section class="content-section section-wrap" id="factions">
+ <div class="section-heading"><div class="eyebrow">06 / POWER STRUCTURES</div><h2>NO FACTION IS<br><em>THE WHOLE STORY.</em></h2><p>Organizations have internal politics, resources, leaders, rivals and competing interests. They do not exist solely to give the player quests.</p></div>
+ <div class="faction-grid">
+  <div><b>ROYAL HOUSES</b><p>Territory, succession, armies and diplomacy.</p></div><div><b>ARCANE INSTITUTE</b><p>Research into elements, curses and forbidden craft.</p></div><div><b>BLACK COVENANT</b><p>A secret network collecting dangerous curses.</p></div><div><b>IRON ORDER</b><p>Elite hunters and containment specialists.</p></div><div><b>THE UNBOUND</b><p>Independents who reject established authority.</p></div><div><b>THE ASCENDANTS</b><p>Power-seekers chasing the threshold of godhood.</p></div>
+ </div>
+ <div class="godhood"><span class="god-mark">∞</span><div><span class="kicker">THE IMPOSSIBLE THRESHOLD</span><h3>Godhood is not a career path.</h3><p>Attempts to reach godlike power carry a stated 99.9% failure chance. Ancient beings may exist beyond ordinary elemental limits, but no one agrees on what they truly are.</p></div></div>
+</section>
+<section class="calendar-section" id="calendar"><div class="section-wrap calendar-inner"><div><div class="eyebrow">07 / TIME IN VARETHIA</div><h2>A DIFFERENT<br><em>MEASURE OF TIME.</em></h2><p>The world follows its own calendar. Travel, recovery, training, aging and events are measured against it.</p></div><div class="calendar-card"><div class="calendar-top"><span>THE VARETHIAN CALENDAR</span><span class="paused"><i></i> CAMPAIGN PAUSED</span></div><div class="calendar-numbers"><div><b>30</b><span>HOURS / DAY</span></div><div><b>08</b><span>DAYS / WEEK</span></div><div><b>40</b><span>DAYS / MONTH</span></div><div><b>480</b><span>DAYS / YEAR</span></div></div><div class="months"><span>ASHFALL</span><span>FROSTVEIL</span><span>THORNRise</span><span>EMBERWAKE</span><span>DUSKMERE</span><span>STORMCALL</span><span>BLOODMOON</span><span>SUNCREST</span><span>HOLLOWTIDE</span><span>IRONREACH</span><span>STARFALL</span><span>NIGHTVEIL</span></div><small class="calendar-foot">No in-world time advances before the player enters the campaign.</small></div></div></section>
+<section class="content-section section-wrap" id="consequences">
+ <div class="section-heading"><div class="eyebrow">08 / BRUTAL REALISM</div><h2>EVERY CHOICE<br><em>LEAVES A MARK.</em></h2><p>There are no guaranteed victories, no automatic forgiveness and no invisible safety net. Consequences can arrive long after the decision that caused them.</p></div>
+ <div class="consequence-grid"><div><span>01</span><b>REPUTATION</b><p>Witnesses talk. Regions form opinions. Rumors distort the truth.</p></div><div><span>02</span><b>BODY & MIND</b><p>Injuries, fatigue, infection, fear and magical exhaustion affect what you can do.</p></div><div><span>03</span><b>RELATIONSHIPS</b><p>Allies can become rivals. Mercy can create loyalty — or future obligations.</p></div><div><span>04</span><b>THE WORLD</b><p>Wars, investigations, prices and power balances shift in response to events.</p></div></div>
+</section>
+<section class="visual-section" id="visuals"><div class="section-wrap"><div class="section-heading"><div class="eyebrow">09 / VISUAL IDENTITY</div><h2>2.5D WORLD.<br><em>FULLY 3D ARCHITECTURE.</em></h2><p>One consistent visual language from the title screen to the deepest dungeon.</p></div>
+ <div class="visual-rules"><div class="visual-rule"><span class="visual-symbol">Ⅱ½</span><b>2.5D PRESENTATION</b><p>Characters, NPCs, creatures, weapons, props, vegetation, weather, magic and visual effects use layered 2.5D presentation.</p></div><div class="visual-rule"><span class="visual-symbol">▥</span><b>FULL 3D BUILDINGS</b><p>Castles, houses, towers, bridges, dungeons and interiors use fully 3D geometry, depth, lighting and walkable spaces.</p></div><div class="visual-rule"><span class="visual-symbol">✧</span><b>ANIMATION & VFX</b><p>Parallax, animated runes, drifting fog, embers, lightning, spell charge-ups, impacts, ragdoll-style reactions and cinematic transitions.</p></div></div>
+ <div class="animation-list"><span>CHARACTER STATES</span><p>Idle · Walk · Run · Turn · Attack · Dodge · Block · Stagger · Knockdown · Injury · Recovery · Death</p><span>MAGIC STATES</span><p>Prepare · Charge · Cast · Travel · Impact · Lingering effect · Dissipate · Interrupt · Miscast</p><span>WORLD EFFECTS</span><p>Rain · Wind · Fire · Smoke · Fog · Lightning · Water · Debris · Destruction · Ambient particles</p></div>
+ </div></section>
+<section class="hud-section section-wrap" id="hud"><div class="section-heading"><div class="eyebrow">10 / THE PLAYER INTERFACE</div><h2>A FULL RPG HUD.<br><em>NOTHING HIDDEN.</em></h2><p>The selected interface is dark medieval, with clear information and a restrained amount of ornament.</p></div>
+ <div class="hud-preview"><div class="hud-head"><span>VARETHIA / FIELD STATUS</span><span class="hud-state">NO CHARACTER SELECTED</span></div><div class="hud-body"><div class="hud-stat"><span>HEALTH</span><b>— / —</b><i></i></div><div class="hud-stat magic"><span>MAGIC ENERGY</span><b>— / —</b><i></i></div><div class="hud-info"><div><small>WORLD DATE</small><b>Not started</b></div><div><small>WORLD TIME</small><b>Paused</b></div><div><small>RELATIONSHIPS</small><b>No records</b></div><div><small>INJURIES</small><b>None recorded</b></div></div><div class="hud-events"><b>WORLD EVENT NOTIFICATIONS</b><span>No events — campaign has not begun.</span></div></div><div class="hud-foot"><span>INVENTORY</span><span>MAP</span><span>JOURNAL</span><span>SETTINGS</span></div></div>
+ <div class="hud-features"><span>✓ LIVE WORLD CLOCK</span><span>✓ NPC RELATIONSHIP TRACKING</span><span>✓ INJURY & HEALTH TRACKING</span><span>✓ WORLD EVENT NOTIFICATIONS</span></div>
+</section>
+<section class="final-cta"><div class="eyebrow">THE WORLD IS WAITING</div><h2>YOUR STORY HAS<br><em>NOT YET BEGUN.</em></h2><p>Create a character when you're ready. Varethia will not begin until you choose to enter it.</p><button class="primary-btn" data-open-character>CREATE YOUR CHARACTER <b>→</b></button></section>
 </main>
-<footer class="footer"><span>VARETHIA © WORLD DESIGN PROTOTYPE</span><span>NO CHOSEN ONE. NO GUARANTEED MERCY.</span><span>2.5D WORLD <b>·</b> 3D ARCHITECTURE</span></footer>
+<footer class="site-footer"><a class="identity" href="#home"><span class="sigil">V</span><span><small>THE CHRONICLES OF</small><b>VARETHIA</b></span></a><span>NO CHOSEN ONE. NO GUARANTEED MERCY.</span><span>2.5D WORLD · 3D ARCHITECTURE</span><a href="WORLD_BIBLE.md">WORLD BIBLE ↗</a></footer>
+<div class="modal-backdrop" id="characterModal" aria-hidden="true"><section class="character-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="closeModal" aria-label="Close">×</button><div class="eyebrow">WRITE YOUR OWN BEGINNING</div><h2 id="modalTitle">CREATE CHARACTER</h2><p>Set up a character draft. This will not start the campaign or advance world time.</p><form id="characterForm"><label>CHARACTER NAME<input name="name" maxlength="32" required placeholder="Enter a name"></label><label>AGE<input name="age" type="number" min="1" max="1200" placeholder="Age"></label><label>BACKGROUND<select name="origin"><option value="">Choose a background</option><option>Rural commoner</option><option>City-born artisan</option><option>Noble household</option><option>Wandering family</option><option>Raised by a community</option><option>Undisclosed / custom</option></select></label><label>NATURAL ELEMENT<select name="element"><option value="">Undiscovered / decide later</option><option>Fire</option><option>Water</option><option>Earth</option><option>Wind</option><option>Ice</option><option>Lightning</option><option>Custom element</option></select></label><label>CURSE STATUS<select name="curse"><option>Unknown</option><option>No known curse</option><option>Known curse</option><option>Custom / undisclosed</option></select></label><button class="primary-btn" type="submit">SAVE CHARACTER DRAFT <b>→</b></button></form><div class="form-message" id="formMessage" role="status"></div></section></div>
 <div class="toast" id="toast" role="status"></div>
 <script src="app.js"></script>
-</body>
-</html>
+</body></html>
