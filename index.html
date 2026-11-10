@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101012">
+<title>Varethia — World of a Thousand Elements</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="world" aria-hidden="true">
+  <div class="sky"></div><div class="moon"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div>
+  <div class="castle">
+    <div class="keep"><i></i><i></i><i></i></div>
+    <div class="tower tower-a"><b></b></div><div class="tower tower-b"><b></b></div>
+    <div class="wall"></div><div class="gate"></div>
+    <div class="windows"></div>
+  </div>
+  <div class="mist mist-a"></div><div class="mist mist-b"></div><div class="foreground"></div>
+  <div class="embers" id="embers"></div><div class="runes" aria-hidden="true">ᚱ　ᚦ　ᛟ　ᚨ　ᛞ　ᚾ　ᚱ</div>
+  <div class="lightning"></div>
+</div>
+<div class="vignette"></div>
+<header class="topbar">
+  <div class="sigil">V</div><div><div class="brand-small">THE CHRONICLES OF</div><div class="brand">VARETHIA</div></div>
+  <div class="top-meta"><span class="status-dot"></span> WORLD ARCHIVE <span class="separator">/</span> BUILD 0.1.0</div>
+</header>
+<main>
+  <section class="hero" id="mainMenu">
+    <div class="eyebrow"><span></span> A WORLD OF A THOUSAND ELEMENTS <span></span></div>
+    <h1>VARETHIA</h1>
+    <p class="tagline">POWER IS A GIFT. <em>SURVIVAL IS EARNED.</em></p>
+    <div class="title-rule"><span>✦</span></div>
+    <nav class="menu" aria-label="Main menu">
+      <button class="menu-item selected" data-action="create"><span class="menu-icon">✧</span><span><strong>Begin Your Chronicle</strong><small>Create a character · Campaign remains paused</small></span><b>01</b></button>
+      <button class="menu-item" data-action="lore"><span class="menu-icon">▤</span><span><strong>World Encyclopedia</strong><small>Elements, curses, kingdoms and history</small></span><b>02</b></button>
+      <button class="menu-item" data-action="factions"><span class="menu-icon">⚑</span><span><strong>Factions & Rumors</strong><small>Discover the powers shaping Varethia</small></span><b>03</b></button>
+      <button class="menu-item" data-action="settings"><span class="menu-icon">⚙</span><span><strong>Settings</strong><small>Display, sound and accessibility</small></span><b>04</b></button>
+    </nav>
+    <div class="bottom-note"><span class="line"></span> YOUR STORY HAS NOT YET BEEN WRITTEN <span class="line"></span></div>
+  </section>
+  <section class="panel hidden" id="detailPanel" aria-live="polite">
+    <button class="back" id="backButton">← BACK TO MAIN MENU</button>
+    <div id="panelContent"></div>
+  </section>
+</main>
+<footer class="footer"><span>VARETHIA © WORLD DESIGN PROTOTYPE</span><span>NO CHOSEN ONE. NO GUARANTEED MERCY.</span><span>2.5D WORLD <b>·</b> 3D ARCHITECTURE</span></footer>
+<div class="toast" id="toast" role="status"></div>
+<script src="app.js"></script>
+</body>
+</html>
