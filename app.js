@@ -1,27 +1,14 @@
-const $ = (s)=>document.querySelector(s);
-const hero=$("#mainMenu"),panel=$("#detailPanel"),content=$("#panelContent");
-const toast=$("#toast");
-let toastTimer;
-function notify(message){toast.textContent=message;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2600)}
-// Ambient ember particles. Decorative only; reduced-motion users receive fewer.
+const $=s=>document.querySelector(s);
 const emberRoot=$("#embers");
 const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-for(let i=0;i<(reduced?8:34);i++){const e=document.createElement("i");e.className="ember";e.style.left=(Math.random()*100)+"%";e.style.animationDuration=(9+Math.random()*16)+"s";e.style.animationDelay=(-Math.random()*18)+"s";e.style.opacity=(.2+Math.random()*.7);emberRoot.appendChild(e)}
-const views={
-lore:{title:"WORLD ENCYCLOPEDIA",intro:"A world shaped by elemental inheritance, dangerous spellcraft and old powers.",cards:[["ELEMENTS","Over one thousand documented types. Ordinary people are born with one natural element."],["CURSES","Beneficial, hostile, dormant, sentient, bloodline and ancient curses."],["SPELLCRAFT","Precision matters. A miscast can injure, destabilize or kill its caster."],["THE CALENDAR","30-hour days · 8-day weeks · 40-day months · 480-day years."]]},
-factions:{title:"FACTIONS & RUMORS",intro:"Institutions pursue their own agendas. Their interests do not revolve around the player.",cards:[["ROYAL HOUSES","Rule territory, maintain armies and maneuver over succession."],["ARCANE INSTITUTE","Studies elements, curses and forbidden spellcraft."],["BLACK COVENANT","A secret network seeking dangerous curses and their bearers."],["IRON ORDER","Elite hunters, investigators and containment specialists."],["THE UNBOUND","Independent people who reject established authority."],["THE ASCENDANTS","Power-seekers who attempt the near-impossible path to godhood."]]},
-settings:{title:"SETTINGS",intro:"The prototype respects system reduced-motion preferences. Production settings will expand with the game.",cards:[["VISUAL STYLE","Dark medieval · charcoal, iron, muted silver, crimson and restrained gold."],["PRESENTATION","2.5D everywhere except architecture, which is fully 3D."],["DIFFICULTY","Brutal realism · injuries, resource limits and persistent consequences."],["CAMPAIGN STATE","Paused. No character exists and no world time is advancing."]]}
-};
-function openView(key){hero.classList.add("hidden");panel.classList.remove("hidden");const v=views[key];content.innerHTML=`<h2>${v.title}</h2><p>${v.intro}</p><div class="panel-grid">${v.cards.map(c=>`<div class="info-card"><b>${c[0]}</b><span>${c[1]}</span></div>`).join("")}</div>`;$("#backButton").focus()}
-function openCharacter(){hero.classList.add("hidden");panel.classList.remove("hidden");content.innerHTML=`
-<h2>CREATE YOUR CHARACTER</h2><p>Write the person who will enter Varethia. No abilities or history are assigned without your choice. The campaign remains paused during this step.</p>
-<div class="form-row"><label for="charName">NAME</label><input id="charName" maxlength="32" placeholder="Enter a name"></div>
-<div class="form-row"><label for="charAge">AGE</label><input id="charAge" type="number" min="1" max="1200" placeholder="Age in years"></div>
-<div class="form-row"><label for="charOrigin">BACKGROUND</label><select id="charOrigin"><option value="">Choose a background</option><option>Rural commoner</option><option>City-born artisan</option><option>Noble household</option><option>Wandering family</option><option>Orphan raised by a community</option><option>Undisclosed / custom</option></select></div>
-<div class="form-row"><label for="charElement">ELEMENT</label><select id="charElement"><option value="">Undiscovered / decide later</option><option>Fire</option><option>Water</option><option>Earth</option><option>Wind</option><option>Ice</option><option>Lightning</option><option>Custom element</option></select></div>
-<div class="form-row"><label for="charCurse">CURSE STATUS</label><select id="charCurse"><option>Unknown</option><option>No known curse</option><option>Known curse</option><option>Custom / undisclosed</option></select></div>
-<button class="action-button" id="saveCharacter">SAVE CHARACTER DRAFT</button>
-<p class="small-note">Saving a draft does not begin the campaign. The world clock remains paused until a separate “Enter Varethia” confirmation is implemented.</p>`;
-$("#saveCharacter").addEventListener("click",()=>{const name=$("#charName").value.trim();if(!name){notify("A name is required to save this draft.");$("#charName").focus();return}const draft={name,age:$("#charAge").value,origin:$("#charOrigin").value,element:$("#charElement").value,curse:$("#charCurse").value,savedAt:new Date().toISOString()};try{localStorage.setItem("varethia.characterDraft",JSON.stringify(draft));notify("Character draft saved locally. Campaign remains paused.");}catch{notify("Could not save locally in this browser.")}})}
-document.querySelectorAll(".menu-item").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".menu-item").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");const action=btn.dataset.action;if(action==="create")openCharacter();else openView(action)}));
-$("#backButton").addEventListener("click",()=>{panel.classList.add("hidden");hero.classList.remove("hidden");const first=$(".menu-item");first.focus()});
+for(let i=0;i<(reduced?6:38);i++){const e=document.createElement("i");e.className="ember";e.style.left=Math.random()*100+"%";e.style.animationDuration=9+Math.random()*17+"s";e.style.animationDelay=-Math.random()*18+"s";e.style.opacity=.2+Math.random()*.7;emberRoot.appendChild(e)}
+const modal=$("#characterModal"),form=$("#characterForm"),message=$("#formMessage"),nav=$("#mainNav");
+function openCharacter(){modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setTimeout(()=>form.elements.name.focus(),50)}
+function closeCharacter(){modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.style.overflow="";message.textContent=""}
+document.querySelectorAll("[data-open-character]").forEach(b=>b.addEventListener("click",openCharacter));
+$("#closeModal").addEventListener("click",closeCharacter);
+modal.addEventListener("click",e=>{if(e.target===modal)closeCharacter()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeCharacter()});
+form.addEventListener("submit",e=>{e.preventDefault();const data=Object.fromEntries(new FormData(form).entries());data.savedAt=new Date().toISOString();data.campaignStarted=false;try{localStorage.setItem("varethia.characterDraft",JSON.stringify(data));message.textContent="Character draft saved in this browser. The campaign remains paused."; }catch{message.textContent="Your browser could not save this draft. You can still keep these details here."}});
+$("#mobileToggle").addEventListener("click",()=>{const open=nav.classList.toggle("open");$("#mobileToggle").setAttribute("aria-expanded",String(open))});
+nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
