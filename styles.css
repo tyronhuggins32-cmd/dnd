@@ -28,3 +28,11 @@
 .battle-impact-fx.ultimate{font-size:88px;text-shadow:0 0 18px #f3cf7c,0 0 42px #e98a4e}
 @keyframes projectileTravel{0%{opacity:0;scale:.2 1}20%{opacity:1}100%{opacity:0;scale:1 1}}
 @keyframes battleScreenShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
+
+/* Deployed units are character models rather than miniature cards. */
+.lane-unit{min-height:108px;padding:3px 2px;background:transparent!important;border:0!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:visible}
+.lane-unit .unit-icon{height:92px;min-height:92px;background:transparent!important;overflow:visible}
+.lane-unit .three-character-canvas{filter:drop-shadow(0 5px 5px rgba(0,0,0,.55))}
+.lane-unit>b,.lane-unit>small{display:none!important}
+.lane-unit .unit-health{width:76%;height:5px;margin:2px auto 0;background:#352629;border:1px solid rgba(210,175,130,.35);border-radius:5px;overflow:hidden}
+.lane-unit .status-pips{position:absolute;top:0;right:2px;font-size:9px;text-shadow:0 1px 4px #000}
