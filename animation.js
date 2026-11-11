@@ -14,7 +14,7 @@ const observer = new IntersectionObserver(entries=>entries.forEach(e=>{
  const host=e.target,view=views.get(host);
  if(e.isIntersecting){host.dataset.threeVisible="true";if(!view){const options=pending.get(host);if(options){pending.delete(host);host.dataset.threeMounted="loading";createView(host,options)}}else view.start()}
  else{host.dataset.threeVisible="false";if(view){const options=view.options||{};view.dispose();views.delete(host);delete host._varethiaView;host.querySelector(".three-character-canvas")?.remove();host.dataset.threeMounted="pending";pending.set(host,options)}}
-}),{rootMargin:"80px"});
+}),{rootMargin:"240px"});
 const palette={Fire:0xb94d32,Water:0x4a8fb4,Earth:0x8d7654,Wind:0xb7c9c7,Ice:0x8bd6e8,Lightning:0xe3c75b,Nature:0x63945b,Shadow:0x6d5a91,Light:0xe5d5a0,Blood:0x9c3042,Metal:0x9aa3ad,Void:0x76519d};
 const material=(color,metalness=.2,roughness=.5,emissive=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness,emissive,emissiveIntensity:.5});
 function part(parent,geometry,mat,name,pos,scale=[1,1,1]){const m=new THREE.Mesh(geometry,mat);m.name=name;m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;parent.add(m);return m}
@@ -63,12 +63,12 @@ async function createView(host,options={}){
  const species=host.dataset.rig||options.species||"Human",element=host.dataset.element||options.element||"Fire";
  const canvas=document.createElement("canvas");canvas.className="three-character-canvas";canvas.setAttribute("aria-label","Animated 3D "+species+" character");host.appendChild(canvas);
  try{
-  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"low-power"});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false,powerPreference:"low-power",depth:true,stencil:false});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xe9d8c2,0x221820,2));const key=new THREE.DirectionalLight(0xffe0bb,2.2);key.position.set(2,4,4);scene.add(key);const rim=new THREE.PointLight(palette[element]||0xb58b58,2,8);rim.position.set(-2,1.5,-1);scene.add(rim);
   const battlefieldView=host.classList.contains("unit-icon")||host.dataset.characterModel?.startsWith("commander-");const camera=new THREE.PerspectiveCamera(battlefieldView?35:31,1,.1,30);camera.position.set(0,battlefieldView?1.22:1.45,battlefieldView?5.5:5.2);camera.lookAt(0,battlefieldView?.92:1,0);
   const asset=await getAsset(species,element,host.dataset.characterModel,battlefieldView),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element)),baseScale=(options.scale||.9)*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
   const mixer=asset.clips.length?new THREE.AnimationMixer(root):null,actions={};if(mixer)asset.clips.forEach(c=>actions[c.name.toLowerCase()]=mixer.clipAction(c));
-  const rig=root.userData.rig||null,particles=[];for(let i=0;i<(battlefieldView?4:10);i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
+  const rig=root.userData.rig||null,particles=[];for(let i=0;i<(battlefieldView?2:3);i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
   const clock=new THREE.Clock();let raf=0,active=false,state="idle",stateAt=0,selected=false,hovered=false;
   const resize=()=>{const w=Math.max(48,host.clientWidth||88),h=Math.max(48,host.clientHeight||88);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
   const clipFor={idle:["idle","breathing"],walk:["walk","walking"],run:["run","running"],attack:["attack","melee","cast"],block:["block","blocking"],dodge:["dodge","roll"],hit:["hit","hurt","stagger"],death:["death","die"]};
