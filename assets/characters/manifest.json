@@ -1,0 +1,9 @@
+{
+ "version":1,
+ "format":"glb",
+ "models":{
+  "Human":"","Demon":"","Angel":"","Elf":"","Orc":"","Beastkin":"",
+  "Undead":"","Dragon":"","Giant":"","Monster":"","Elemental":"","Legendary Creature":""
+ },
+ "notes":"Add same-origin .glb URLs. Compatible humanoids share a rig; non-humanoid species use specialized rigs. Empty entries use the built-in animated procedural rig."
+}
