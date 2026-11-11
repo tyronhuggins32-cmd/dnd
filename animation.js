@@ -48,7 +48,7 @@ async function getAsset(species,element){
  if(!modelCache.has(key))modelCache.set(key,(async()=>{
   const url=manifest.models?.[species]||manifest.characters?.[species];
   if(url)try{const g=await loader.loadAsync(url);return {scene:g.scene,clips:g.animations||[],external:true}}catch(e){console.warn("GLB load failed; procedural rig used",url,e)}
-  return {scene:["Dragon","Monster","Legendary Creature"].includes(species)?beast(species,element):humanoid(species,element),clips:[],external:false};
+  return {scene:null,clips:[],external:false};
  })());
  return modelCache.get(key);
 }
@@ -60,7 +60,7 @@ async function mount(host,options={}){
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"low-power"});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xe9d8c2,0x221820,2));const key=new THREE.DirectionalLight(0xffe0bb,2.2);key.position.set(2,4,4);scene.add(key);const rim=new THREE.PointLight(palette[element]||0xb58b58,2,8);rim.position.set(-2,1.5,-1);scene.add(rim);
   const camera=new THREE.PerspectiveCamera(31,1,.1,30);camera.position.set(0,1.45,5.2);camera.lookAt(0,1,0);
-  const asset=await getAsset(species,element),root=asset.external?SkeletonUtils.clone(asset.scene):asset.scene.clone(true);root.scale.setScalar(options.scale||.9);scene.add(root);
+  const asset=await getAsset(species,element),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature"].includes(species)?beast(species,element):humanoid(species,element));root.scale.setScalar(options.scale||.9);scene.add(root);
   const mixer=asset.clips.length?new THREE.AnimationMixer(root):null,actions={};if(mixer)asset.clips.forEach(c=>actions[c.name.toLowerCase()]=mixer.clipAction(c));
   const rig=root.userData.rig||null,particles=[];for(let i=0;i<10;i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
   const clock=new THREE.Clock();let raf=0,active=false,state="idle",stateAt=0,selected=false,hovered=false;
@@ -92,5 +92,5 @@ document.addEventListener("pointerover",e=>{const card=e.target.closest?.("[data
 document.addEventListener("pointerout",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(false)});
 document.addEventListener("click",e=>{const card=e.target.closest?.("[data-card]");if(card){document.querySelectorAll(".card-avatar").forEach(x=>x._varethiaView?.select(false));card.querySelector(".card-avatar")?._varethiaView?.select(true)}});
 function impact(detail){const box=document.querySelector(".battlefield-frame");if(!box)return;const fx=document.createElement("span");fx.className="battle-impact-fx "+(detail.element||"");fx.textContent=detail.element==="Fire"?"✹":detail.element==="Ice"?"❄":detail.element==="Lightning"?"ϟ":"✦";box.appendChild(fx);setTimeout(()=>fx.remove(),700)}
-window.addEventListener("varethia:combat",e=>{const d=e.detail||{};const target=document.querySelector('[data-character-model="'+CSS.escape(String(d.targetId||""))+'"]');if(target?._varethiaView)target._varethiaView.setState(d.type==="death"?"death":d.type==="block"?"block":"hit");const attacker=document.querySelector('[data-character-model="'+CSS.escape(String(d.attackerId||""))+'"]');if(attacker?._varethiaView&&d.type==="attack")attacker._varethiaView.setState("attack");if(d.type==="ultimate"||d.type==="impact")impact(d)});
+window.addEventListener("varethia:combat",e=>{const d=e.detail||{};const findLive=id=>[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.closest(".lane-unit")&&n.getClientRects().length)||[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.getClientRects().length);const target=findLive(d.targetId);if(target?._varethiaView)target._varethiaView.setState(d.type==="death"?"death":d.type==="block"?"block":"hit");const attacker=findLive(d.attackerId);if(attacker?._varethiaView&&d.type==="attack")attacker._varethiaView.setState("attack");if(d.type==="ultimate"||d.type==="impact"||d.type==="attack")impact(d)});
 window.VarethiaAnimation={mount,scan,play(id,state){document.querySelector('[data-character-model="'+CSS.escape(String(id))+'"]')?._varethiaView?.setState(state)},getStatus(){return {engine:"Three.js",cachedModels:modelCache.size,activeViews:views.size,manifest:"assets/characters/manifest.json"}}};
