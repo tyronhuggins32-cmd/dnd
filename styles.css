@@ -21,3 +21,10 @@
 @keyframes cardEntrance{0%{opacity:0;transform:translateY(14px) scale(.88);filter:brightness(1.8)}100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}}
 @keyframes battleImpactBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-25deg)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(8deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8) rotate(20deg)}}
 @media(prefers-reduced-motion:reduce){.card-avatar,.character-card.rarity-legendary .card-avatar,.character-card.rarity-mythical .card-avatar,.character-card.rarity-divine .card-avatar{animation:none}.battle-impact-fx{animation-duration:.15s}}
+
+.character-card .card-avatar{font-size:0!important;display:block}
+.battle-projectile{position:absolute;z-index:9;height:3px;transform-origin:left center;background:linear-gradient(90deg,transparent,#f6d58b,#fff);box-shadow:0 0 8px #e8b86d,0 0 18px #e8b86d;pointer-events:none;animation:projectileTravel .38s ease-out forwards}
+.battlefield-frame.impact-shake{animation:battleScreenShake .22s linear}
+.battle-impact-fx.ultimate{font-size:88px;text-shadow:0 0 18px #f3cf7c,0 0 42px #e98a4e}
+@keyframes projectileTravel{0%{opacity:0;scale:.2 1}20%{opacity:1}100%{opacity:0;scale:1 1}}
+@keyframes battleScreenShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
