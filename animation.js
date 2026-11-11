@@ -47,9 +47,10 @@ function beast(species,element){
  const tail=new THREE.Group();tail.name="tail";tail.position.set(0,.82,-.55);root.add(tail);capsule(tail,"tailSegment",.12,.7,accent,[0,0,-.34]).rotation.x=Math.PI/2;
  return Object.assign(root,{userData:{rig:{head,legs,tail}}});
 }
-async function getAsset(species,element,characterId){
+async function getAsset(species,element,characterId,lowDetail=false){
  await manifestReady;
- const customUrl=manifest.characters?.[String(characterId)]||manifest.models?.[species]||manifest.characters?.[species];
+ const entry=manifest.characters?.[String(characterId)]||manifest.models?.[species]||manifest.characters?.[species];
+ const customUrl=typeof entry==="string"?entry:(lowDetail?(entry?.low||entry?.high):(entry?.high||entry?.low));
  const key=customUrl||species+"|"+element;
  if(!modelCache.has(key))modelCache.set(key,(async()=>{
   const url=customUrl;
@@ -64,10 +65,10 @@ async function createView(host,options={}){
  try{
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"low-power"});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xe9d8c2,0x221820,2));const key=new THREE.DirectionalLight(0xffe0bb,2.2);key.position.set(2,4,4);scene.add(key);const rim=new THREE.PointLight(palette[element]||0xb58b58,2,8);rim.position.set(-2,1.5,-1);scene.add(rim);
-  const camera=new THREE.PerspectiveCamera(31,1,.1,30);camera.position.set(0,1.45,5.2);camera.lookAt(0,1,0);
-  const asset=await getAsset(species,element,host.dataset.characterModel),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element)),baseScale=(options.scale||.9)*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
+  const battlefieldView=host.classList.contains("unit-icon")||host.dataset.characterModel?.startsWith("commander-");const camera=new THREE.PerspectiveCamera(battlefieldView?35:31,1,.1,30);camera.position.set(0,battlefieldView?1.22:1.45,battlefieldView?5.5:5.2);camera.lookAt(0,battlefieldView?.92:1,0);
+  const asset=await getAsset(species,element,host.dataset.characterModel,battlefieldView),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element)),baseScale=(options.scale||.9)*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
   const mixer=asset.clips.length?new THREE.AnimationMixer(root):null,actions={};if(mixer)asset.clips.forEach(c=>actions[c.name.toLowerCase()]=mixer.clipAction(c));
-  const rig=root.userData.rig||null,particles=[];for(let i=0;i<10;i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
+  const rig=root.userData.rig||null,particles=[];for(let i=0;i<(battlefieldView?4:10);i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
   const clock=new THREE.Clock();let raf=0,active=false,state="idle",stateAt=0,selected=false,hovered=false;
   const resize=()=>{const w=Math.max(48,host.clientWidth||88),h=Math.max(48,host.clientHeight||88);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
   const clipFor={idle:["idle","breathing"],walk:["walk","walking"],run:["run","running"],attack:["attack","melee","cast"],block:["block","blocking"],dodge:["dodge","roll"],hit:["hit","hurt","stagger"],death:["death","die"]};
