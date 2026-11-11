@@ -6,7 +6,7 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const loader = new GLTFLoader();
 const modelCache = new Map();
 let manifest = { models: {}, characters: {} };
-fetch("./assets/characters/manifest.json").then(r=>r.ok?r.json():manifest).then(x=>manifest=x||manifest).catch(()=>{});
+const manifestReady=fetch("./assets/characters/manifest.json").then(r=>r.ok?r.json():manifest).then(x=>(manifest=x||manifest)).catch(()=>manifest);
 const views = new Map();
 const pending = new Map();
 const pendingStates = new Map();
@@ -48,6 +48,7 @@ function beast(species,element){
  return Object.assign(root,{userData:{rig:{head,legs,tail}}});
 }
 async function getAsset(species,element,characterId){
+ await manifestReady;
  const customUrl=manifest.characters?.[String(characterId)]||manifest.models?.[species]||manifest.characters?.[species];
  const key=customUrl||species+"|"+element;
  if(!modelCache.has(key))modelCache.set(key,(async()=>{
