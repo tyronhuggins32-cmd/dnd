@@ -24,3 +24,8 @@ Until a GLB is assigned, the game uses an animated Three.js procedural test char
 You can map a specific character card ID to a unique GLB under the `characters` object in `manifest.json`. The numeric card ID overrides its species-level model. For example, card 1 can use `./assets/characters/ashen-warden.glb`. This allows the same individual GLB and skeleton to appear on its collection card, in the hand and on the battlefield.
 
 The manifest currently contains no imported production GLBs. The built-in procedural test rig keeps the animation pipeline functional until those models are added.
+
+
+## Optional LOD exports
+
+A species or individual-card manifest entry may be a single GLB path or an object with `high` and `low` paths. Collection portraits load the high-detail version; battlefield units and commanders load the low-detail version. Both exports should use the same skeleton, bone names and animation clip names so the character remains visually consistent across contexts.
