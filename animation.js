@@ -9,6 +9,7 @@ let manifest = { models: {}, characters: {} };
 fetch("./assets/characters/manifest.json").then(r=>r.ok?r.json():manifest).then(x=>manifest=x||manifest).catch(()=>{});
 const views = new Map();
 const pending = new Map();
+const pendingStates = new Map();
 const observer = new IntersectionObserver(entries=>entries.forEach(e=>{
  const host=e.target,view=views.get(host);
  if(e.isIntersecting&&!view){const options=pending.get(host);if(options){pending.delete(host);host.dataset.threeMounted="loading";createView(host,options)}}
@@ -86,7 +87,7 @@ async function createView(host,options={}){
    if(Math.floor(t*2)%8===0)resize();renderer.render(scene,camera);
   }
   const view={options,start(){if(active)return;active=true;clock.start();frame()},stop(){active=false;cancelAnimationFrame(raf)},dispose(){active=false;cancelAnimationFrame(raf);renderer.dispose();scene.traverse(o=>{o.geometry?.dispose?.();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose?.())}})},setState,select(v){selected=v},hover(v){hovered=v}};
-  views.set(host,view);host._varethiaView=view;if(options.state)setState(options.state);if(host.getClientRects().length)view.start();
+  views.set(host,view);host._varethiaView=view;if(options.state)setState(options.state);const pendingState=pendingStates.get(String(host.dataset.characterModel||""));if(pendingState){setState(pendingState);pendingStates.delete(String(host.dataset.characterModel||""))}if(host.getClientRects().length)view.start();
  }catch(err){host.dataset.threeMounted="failed";canvas.remove();console.warn("Three.js view unavailable; keeping original 2D art",err)}
 }
 function mount(host,options={}){if(!host||host.dataset.threeMounted)return;host.dataset.threeMounted="pending";pending.set(host,options);observer.observe(host)}
@@ -96,5 +97,7 @@ document.addEventListener("pointerover",e=>{const card=e.target.closest?.("[data
 document.addEventListener("pointerout",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(false)});
 document.addEventListener("click",e=>{const card=e.target.closest?.("[data-card]");if(card){document.querySelectorAll(".card-avatar").forEach(x=>x._varethiaView?.select(false));card.querySelector(".card-avatar")?._varethiaView?.select(true)}});
 function impact(detail){const box=document.querySelector(".battlefield-frame");if(!box)return;const fx=document.createElement("span");fx.className="battle-impact-fx "+(detail.element||"");fx.textContent=detail.element==="Fire"?"✹":detail.element==="Ice"?"❄":detail.element==="Lightning"?"ϟ":"✦";box.appendChild(fx);setTimeout(()=>fx.remove(),700)}
-window.addEventListener("varethia:combat",e=>{const d=e.detail||{};const findLive=id=>[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.closest(".lane-unit")&&n.getClientRects().length)||[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.getClientRects().length);const target=findLive(d.targetId);if(target?._varethiaView)target._varethiaView.setState(d.type==="death"?"death":d.type==="block"?"block":"hit");const attacker=findLive(d.attackerId);if(attacker?._varethiaView&&d.type==="attack")attacker._varethiaView.setState("attack");if(d.type==="ultimate"||d.type==="impact"||d.type==="attack")impact(d)});
+function findLiveModel(id){return [...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.closest(".lane-unit")&&n.getClientRects().length)||[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.getClientRects().length)}
+function setModelState(id,state){if(id===undefined||id===null)return;const key=String(id),host=findLiveModel(key);if(host?._varethiaView)host._varethiaView.setState(state);else pendingStates.set(key,state)}
+window.addEventListener("varethia:combat",e=>{const d=e.detail||{};if(d.targetId!==undefined)setModelState(d.targetId,d.type==="death"?"death":d.type==="block"?"block":d.type==="dodge"?"dodge":"hit");if(d.attackerId!==undefined&&d.type==="attack")setModelState(d.attackerId,"attack");if(d.type==="deploy"){setModelState(d.targetId,"walk");setTimeout(()=>setModelState(d.targetId,"idle"),650)}if(d.type==="ultimate"||d.type==="impact"||d.type==="attack"||d.type==="deploy")impact(d)});
 window.VarethiaAnimation={mount,scan,play(id,state){document.querySelector('[data-character-model="'+CSS.escape(String(id))+'"]')?._varethiaView?.setState(state)},getStatus(){return {engine:"Three.js",cachedModels:modelCache.size,activeViews:views.size,manifest:"assets/characters/manifest.json"}}};
