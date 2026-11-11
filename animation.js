@@ -8,8 +8,12 @@ const modelCache = new Map();
 let manifest = { models: {}, characters: {} };
 fetch("./assets/characters/manifest.json").then(r=>r.ok?r.json():manifest).then(x=>manifest=x||manifest).catch(()=>{});
 const views = new Map();
+const pending = new Map();
 const observer = new IntersectionObserver(entries=>entries.forEach(e=>{
-  const v=views.get(e.target); if(!v)return; e.isIntersecting?v.start():v.stop();
+ const host=e.target,view=views.get(host);
+ if(e.isIntersecting&&!view){const options=pending.get(host);if(options){pending.delete(host);host.dataset.threeMounted="loading";createView(host,options)}}
+ else if(e.isIntersecting&&view)view.start();
+ else if(!e.isIntersecting&&view){const options=view.options||{};view.dispose();views.delete(host);host.querySelector(".three-character-canvas")?.remove();host.dataset.threeMounted="pending";pending.set(host,options)}
 }),{rootMargin:"80px"});
 const palette={Fire:0xb94d32,Water:0x4a8fb4,Earth:0x8d7654,Wind:0xb7c9c7,Ice:0x8bd6e8,Lightning:0xe3c75b,Nature:0x63945b,Shadow:0x6d5a91,Light:0xe5d5a0,Blood:0x9c3042,Metal:0x9aa3ad,Void:0x76519d};
 const material=(color,metalness=.2,roughness=.5,emissive=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness,emissive,emissiveIntensity:.5});
@@ -52,8 +56,7 @@ async function getAsset(species,element){
  })());
  return modelCache.get(key);
 }
-async function mount(host,options={}){
- if(!host||host.dataset.threeMounted)return;host.dataset.threeMounted="1";
+async function createView(host,options={}){
  const species=host.dataset.rig||options.species||"Human",element=host.dataset.element||options.element||"Fire";
  const canvas=document.createElement("canvas");canvas.className="three-character-canvas";canvas.setAttribute("aria-label","Animated 3D "+species+" character");host.appendChild(canvas);
  try{
@@ -82,11 +85,12 @@ async function mount(host,options={}){
    particles.forEach((p,i)=>{p.position.y+=dt*(.06+(i%3)*.02);if(p.position.y>2.5)p.position.y=0});
    if(Math.floor(t*2)%8===0)resize();renderer.render(scene,camera);
   }
-  const view={start(){if(active)return;active=true;clock.start();frame()},stop(){active=false;cancelAnimationFrame(raf)},setState,select(v){selected=v},hover(v){hovered=v}};
-  views.set(host,view);host._varethiaView=view;observer.observe(host);if(options.state)setState(options.state);
+  const view={options,start(){if(active)return;active=true;clock.start();frame()},stop(){active=false;cancelAnimationFrame(raf)},dispose(){active=false;cancelAnimationFrame(raf);renderer.dispose();scene.traverse(o=>{o.geometry?.dispose?.();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose?.())}})},setState,select(v){selected=v},hover(v){hovered=v}};
+  views.set(host,view);host._varethiaView=view;if(options.state)setState(options.state);if(host.getClientRects().length)view.start();
  }catch(err){host.dataset.threeMounted="failed";canvas.remove();console.warn("Three.js view unavailable; keeping original 2D art",err)}
 }
-function scan(root=document){root.querySelectorAll?.("[data-character-model]").forEach(host=>mount(host,{turn:host.classList.contains("card-avatar"),scale:host.classList.contains("unit-icon")?.58:.9}))}
+function mount(host,options={}){if(!host||host.dataset.threeMounted)return;host.dataset.threeMounted="pending";pending.set(host,options);observer.observe(host)}
+function scan(root=document){root.querySelectorAll?.("[data-character-model]").forEach(host=>mount(host,{turn:host.classList.contains("card-avatar"),scale:host.classList.contains("unit-icon") ? .58 : .9}))}
 const mutation=new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n)})));mutation.observe(document.body,{childList:true,subtree:true});scan();
 document.addEventListener("pointerover",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(true)});
 document.addEventListener("pointerout",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(false)});
