@@ -65,7 +65,7 @@ async function createView(host,options={}){
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"low-power"});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xe9d8c2,0x221820,2));const key=new THREE.DirectionalLight(0xffe0bb,2.2);key.position.set(2,4,4);scene.add(key);const rim=new THREE.PointLight(palette[element]||0xb58b58,2,8);rim.position.set(-2,1.5,-1);scene.add(rim);
   const camera=new THREE.PerspectiveCamera(31,1,.1,30);camera.position.set(0,1.45,5.2);camera.lookAt(0,1,0);
-  const asset=await getAsset(species,element,host.dataset.characterModel),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element));root.scale.setScalar((options.scale||.9)*(species==="Giant"?1.25:1));scene.add(root);
+  const asset=await getAsset(species,element,host.dataset.characterModel),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element)),baseScale=(options.scale||.9)*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
   const mixer=asset.clips.length?new THREE.AnimationMixer(root):null,actions={};if(mixer)asset.clips.forEach(c=>actions[c.name.toLowerCase()]=mixer.clipAction(c));
   const rig=root.userData.rig||null,particles=[];for(let i=0;i<10;i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
   const clock=new THREE.Clock();let raf=0,active=false,state="idle",stateAt=0,selected=false,hovered=false;
@@ -75,8 +75,8 @@ async function createView(host,options={}){
   function frame(){if(!active)return;raf=requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;if(mixer)mixer.update(dt);
    if(rig&&!mixer){
     if(state==="idle"){root.position.y=Math.sin(t*2)*.025;if(rig.torso)rig.torso.rotation.z=Math.sin(t*1.2)*.018;if(rig.head)rig.head.rotation.y=Math.sin(t*.7)*.07;if(rig.weapon)rig.weapon.rotation.z=Math.sin(t*1.6)*.035}
-    if(state==="walk"||state==="run"){const sp=state==="run"?10:6;root.position.y=Math.abs(Math.sin(t*sp))*.07;if(rig.legL)rig.legL.rotation.x=Math.sin(t*sp)*.6;if(rig.legR)rig.legR.rotation.x=-Math.sin(t*sp)*.6;if(rig.armL)rig.armL.rotation.x=-Math.sin(t*sp)*.3;if(rig.armR)rig.armR.rotation.x=Math.sin(t*sp)*.3}
-    if(state==="attack"){const p=Math.min(1,(performance.now()-stateAt)/520);if(rig.armR)rig.armR.rotation.x=-Math.sin(p*Math.PI)*1.9;if(rig.torso)rig.torso.rotation.y=Math.sin(p*Math.PI)*.55;if(rig.weapon)rig.weapon.rotation.z=-Math.sin(p*Math.PI)*.65;if(p>=1)setState("idle")}
+    if(state==="walk"||state==="run"){const sp=state==="run"?10:6;root.position.y=Math.abs(Math.sin(t*sp))*.07;if(rig.legL)rig.legL.rotation.x=Math.sin(t*sp)*.6;if(rig.legR)rig.legR.rotation.x=-Math.sin(t*sp)*.6;if(rig.armL)rig.armL.rotation.x=-Math.sin(t*sp)*.3;if(rig.armR)rig.armR.rotation.x=Math.sin(t*sp)*.3;if(rig.legs)rig.legs.forEach((l,i)=>l.rotation.x=Math.sin(t*sp+i*Math.PI)*.42)}
+    if(state==="attack"){const p=Math.min(1,(performance.now()-stateAt)/520);if(rig.armR)rig.armR.rotation.x=-Math.sin(p*Math.PI)*1.9;if(rig.torso)rig.torso.rotation.y=Math.sin(p*Math.PI)*.55;if(rig.weapon)rig.weapon.rotation.z=-Math.sin(p*Math.PI)*.65;if(rig.head)rig.head.rotation.x=-Math.sin(p*Math.PI)*.45;if(rig.tail)rig.tail.rotation.x=Math.sin(p*Math.PI)*.35;if(p>=1)setState("idle")}
     if(state==="deploy"){const p=Math.min(1,(performance.now()-stateAt)/620);root.position.y=Math.sin(p*Math.PI)*.72;if(p>=1){root.position.y=0;setState("idle")}}
     if(state==="block"){if(rig.armL)rig.armL.rotation.x=-1.1;if(rig.armR)rig.armR.rotation.x=-1.1}
     if(state==="dodge"){const p=Math.min(1,(performance.now()-stateAt)/420);root.position.x=Math.sin(p*Math.PI)*.45;root.rotation.z=Math.sin(p*Math.PI)*.4;if(p>=1){root.position.x=0;root.rotation.z=0;setState("idle")}}
@@ -84,7 +84,7 @@ async function createView(host,options={}){
     if(state==="death"){root.rotation.z=THREE.MathUtils.damp(root.rotation.z,1.42,4,dt);root.position.y=THREE.MathUtils.damp(root.position.y,-.62,4,dt)}
     if(rig.wings)rig.wings.forEach((w,i)=>w.rotation.z=Math.sin(t*2+i)*.08);
    }
-   root.rotation.y=options.turn?Math.sin(t*.35)*.22:(hovered?-.14:0);root.scale.setScalar((options.scale||.9)*(selected?1.07:hovered?1.035:1));
+   root.rotation.y=options.turn?Math.sin(t*.35)*.22:(hovered?-.14:0);root.scale.setScalar(baseScale*(selected?1.07:hovered?1.035:1));
    particles.forEach((p,i)=>{p.position.y+=dt*(.06+(i%3)*.02);if(p.position.y>2.5)p.position.y=0});
    if(Math.floor(t*2)%8===0)resize();renderer.render(scene,camera);
   }
