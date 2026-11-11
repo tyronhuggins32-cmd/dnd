@@ -30,3 +30,18 @@ This is a responsive world website and front-end concept showcase, not a complet
 
 ## Canonical world design
 See [WORLD_BIBLE.md](WORLD_BIBLE.md) for the full setting rules and production direction.
+
+
+## Three.js character animation pipeline
+
+The original HTML/CSS/JavaScript GitHub Pages structure remains in place. `animation.js` adds a Three.js rendering layer after the existing game scripts.
+
+- Animated 3D previews for collection cards and inspected characters.
+- The same model source is reused for hand cards, five-lane fighters and commanders.
+- GLB loading through GLTFLoader, with reusable animation clips and shared model caching.
+- Procedural humanoid and creature test rigs when no GLB has been assigned.
+- Idle, walk/run, deploy jump, melee attack, block, dodge, hit and death states.
+- Elemental ambient particles, impact flashes, projectile trails, ultimate bursts, camera shake and synthesized combat sound cues.
+- Intersection-based lazy loading, offscreen render pausing, capped pixel ratio and disposal when UI cards are replaced.
+
+See `assets/characters/README.md` for adding production GLB assets. The initial project includes a procedural test character; individual production GLB files still need to be supplied and mapped in the asset manifest.
