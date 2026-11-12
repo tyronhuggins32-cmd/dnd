@@ -46,9 +46,11 @@ function build(){
  scene.add(new THREE.HemisphereLight(0xc4cbb1,0x171b13,1.55));
  const moon=new THREE.DirectionalLight(0xd9dfc4,2.25);moon.position.set(4,10,5);scene.add(moon);
  const warm=new THREE.PointLight(0xd0a66b,35,17,2);warm.position.set(-4,3,-2);scene.add(warm);
- const shrineLight=new THREE.PointLight(0x8fc2ac,18,12,2);shrineLight.position.set(-3,2.5,-3.7);scene.add(shrineLight);
+ const shrineLight=new THREE.PointLight(0x8fc2ac,18,12,2);shrineLight.position.set(-3,2.5,-3.7);scene.add(shrineLight);movers.push({object:shrineLight,kind:"pulseLight",base:18});
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),material(0x20291b));floor.rotation.x=-Math.PI/2;floor.position.y=-.05;scene.add(floor);
  for(let i=0;i<22;i++){const x=(Math.random()-.5)*25,z=-1-Math.random()*18;addTree(x,z,5+Math.random()*5,.7+Math.random()*.75)}
+ // Near-camera silhouettes create foreground depth against the distant forest and shrine.
+ addTree(-10,3,10,1.45);addTree(10,2.5,11,1.55);
  addRuin();addShrine();addParticles();
  const fogMat=new THREE.MeshBasicMaterial({color:0xc3cbb3,transparent:true,opacity:.045,depthWrite:false});
  for(let i=0;i<4;i++){const fog=new THREE.Mesh(new THREE.PlaneGeometry(24,3),fogMat.clone());fog.position.set((i-1.5)*3,.45+i*.28,-1-i*2);fog.rotation.x=-.08;movers.push({object:fog,kind:"fog",phase:i});scene.add(fog)}
@@ -59,7 +61,7 @@ function animate(){
  if(!renderer||!scene)return;
  const active=!screen.classList.contains("dismissed");
  if(active&&!reduced&&!transitioning&&camera){camera.position.x=THREE.MathUtils.damp(camera.position.x,pointer.x*1.05,1.05,dt);camera.position.y=THREE.MathUtils.damp(camera.position.y,4.1+pointer.y*.38,1.05,dt);camera.position.z=THREE.MathUtils.damp(camera.position.z,13-Math.abs(pointer.x)*.16,1.05,dt);camera.lookAt(target.x+pointer.x*.34,target.y+pointer.y*.16,target.z)}
- for(const mover of movers){const o=mover.object;if(mover.kind==="tree"&&!reduced)o.rotation.z=Math.sin(elapsed*.28+mover.phase)*.009;if(mover.kind==="ring"&&!reduced)o.rotation.y=elapsed*.18;if(mover.kind==="crystal"){o.rotation.y=elapsed*.35;o.position.y=2.05+Math.sin(elapsed*1.2)*.14}if(mover.kind==="fog"&&!reduced)o.position.x=Math.sin(elapsed*.12+mover.phase)*1.3;if(mover.kind==="particles"&&!reduced){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i)+dt*(.12+(i%5)*.025);p.setY(i,y>7.3?.15:y)}p.needsUpdate=true}}
+ for(const mover of movers){const o=mover.object;if(mover.kind==="tree"&&!reduced)o.rotation.z=Math.sin(elapsed*.28+mover.phase)*.009;if(mover.kind==="ring"&&!reduced)o.rotation.y=elapsed*.18;if(mover.kind==="crystal"){o.rotation.y=elapsed*.35;o.position.y=2.05+Math.sin(elapsed*1.2)*.14}if(mover.kind==="pulseLight"&&!reduced)o.intensity=mover.base+Math.sin(elapsed*1.15)*2.2;if(mover.kind==="fog"&&!reduced)o.position.x=Math.sin(elapsed*.12+mover.phase)*1.3;if(mover.kind==="particles"&&!reduced){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i)+dt*(.12+(i%5)*.025);p.setY(i,y>7.3?.15:y)}p.needsUpdate=true}}
  renderer.render(scene,camera);
 }
 try{
