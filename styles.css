@@ -213,3 +213,79 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
   font-size:13px!important;
  }
 }
+
+
+/* Illustrated game-mode selector: parchment, deep blue frame and warm mauve world backdrop. */
+.game-hub:has(.mode-select-screen.active){
+ background:#503b42!important;
+ background-image:radial-gradient(ellipse at 50% 30%,rgba(143,103,94,.28),transparent 55%)!important;
+}
+.mode-select-screen{padding:28px 0 50px!important}
+.mode-select-frame{
+ width:min(520px,100%);margin:0 auto;padding:0 16px 18px;
+ background:linear-gradient(180deg,#17435b 0%,#10334c 72%,#0c263b 100%);
+ border:5px solid #b28a50;outline:1px solid #e1c58a;
+ box-shadow:0 12px 35px rgba(0,0,0,.42),inset 0 0 0 2px rgba(242,215,156,.35);
+}
+.mode-select-heading{
+ min-height:62px;margin:0 -16px 0;padding:8px 15px;
+ display:grid;grid-template-columns:42px 1fr 34px;align-items:center;gap:10px;
+ color:#493326;background:linear-gradient(180deg,#f2dfa5,#d9bd78 88%,#a67a43);
+ border-bottom:5px solid #75512f;box-shadow:0 4px 0 rgba(0,0,0,.25);
+}
+.mode-trophy,.mode-settings-mark{font-size:25px;text-align:center;color:#77502e;text-shadow:0 1px #f9e9b8}
+.mode-select-heading small{display:block;text-align:center;font:700 8px Cinzel;letter-spacing:.16em;color:#80603c}
+.mode-select-heading h2{margin:3px 0 0!important;text-align:center;font:800 clamp(17px,4vw,23px) Cinzel!important;letter-spacing:.025em;color:#493326!important;text-shadow:0 1px rgba(255,255,255,.35)}
+.mode-select-subtitle{margin:15px 4px 13px;text-align:center;color:#e1d2b2;font:14px 'Crimson Text';}
+.mode-select-list{display:grid;gap:13px}
+.mode-select-card{
+ display:grid;grid-template-columns:1fr;gap:0;width:100%;padding:6px;
+ text-align:left;color:#4b3326;background:linear-gradient(145deg,#f0d99d,#c9a76a);
+ border:3px solid #79552f;border-radius:2px;
+ box-shadow:0 4px 0 #6a482b,0 7px 12px rgba(0,0,0,.32),inset 0 0 0 2px rgba(255,244,198,.75);
+ cursor:pointer;touch-action:manipulation;transition:transform .16s ease,filter .16s ease;
+}
+.mode-select-card:active{transform:scale(.985);filter:brightness(1.12)}
+.mode-art{
+ height:clamp(105px,25vw,148px);position:relative;display:block;overflow:hidden;
+ border:2px solid #8e7048;box-shadow:inset 0 0 25px rgba(0,0,0,.35);
+}
+.mode-art:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,22,22,.05),rgba(9,12,17,.5))}
+.mode-arena .mode-art{background:radial-gradient(ellipse at 50% 24%,#8ab8ae 0 13%,transparent 36%),linear-gradient(130deg,#315a43,#88a66d 48%,#354d48 49%,#1a2930)}
+.mode-dungeon .mode-art{background:radial-gradient(ellipse at 50% 60%,#d18b3e 0 5%,transparent 23%),linear-gradient(180deg,#4b3027,#8b5937 52%,#1b2026)}
+.mode-survival .mode-art{background:radial-gradient(ellipse at 50% 70%,#d15c27 0 8%,transparent 34%),linear-gradient(135deg,#4d2528,#9c5638 48%,#20232b)}
+.mode-art-sun{position:absolute;width:85px;height:85px;right:12%;top:-22px;border-radius:50%;background:rgba(236,208,136,.38);filter:blur(2px)}
+.mode-art-hero,.mode-art-enemy,.mode-art-gate,.mode-art-skull,.mode-art-flame{
+ position:absolute;display:grid;place-items:center;text-shadow:0 5px 8px rgba(0,0,0,.7),0 0 18px rgba(244,190,108,.45);
+}
+.mode-art-hero{left:20%;bottom:12px;font-size:clamp(48px,11vw,72px);color:#f3d39a}
+.mode-art-enemy{right:18%;bottom:10px;font-size:clamp(42px,10vw,66px);color:#d2d2c7}
+.mode-art-gate{left:50%;top:3px;transform:translateX(-50%);font-size:clamp(76px,17vw,112px);color:#b8a17b}
+.mode-art-torch{position:absolute;left:19%;bottom:17px;color:#ffc56d;font-size:35px;text-shadow:0 0 22px #e66c36}
+.mode-art-skull{left:50%;top:0;transform:translateX(-50%);font-size:clamp(72px,17vw,106px);color:#c7c1aa}
+.mode-art-flame{right:14%;bottom:3px;font-size:50px;color:#f3a24c}
+.mode-art-label{position:absolute;left:10px;top:8px;padding:4px 7px;color:#fff2d0;background:rgba(13,18,17,.72);font:700 9px Cinzel;letter-spacing:.1em}
+.mode-card-copy{display:grid;gap:5px;padding:10px 9px 8px}
+.mode-card-copy>b{font:800 13px Cinzel;color:#4b3326}
+.mode-card-copy small{font:14px 'Crimson Text';line-height:1.25;color:#5f4936}
+.mode-card-copy em{font:700 8px Cinzel;letter-spacing:.1em;color:#8a5b31;font-style:normal}
+.mode-card-arrow{display:none}
+.mode-select-footer{display:flex;align-items:center;justify-content:center;gap:12px;padding:17px 0 0;color:#d9c79f;font:8px Cinzel;letter-spacing:.16em}
+.mode-select-footer span{color:#d6ad6d}
+@media(min-width:650px){
+ .mode-select-card{grid-template-columns:1.15fr 1fr;align-items:stretch;position:relative;min-height:154px}
+ .mode-art{height:100%;min-height:138px}
+ .mode-card-copy{align-content:center;padding:12px 14px}
+ .mode-card-arrow{display:block;position:absolute;right:13px;bottom:9px;color:#8c633a;font:25px Cinzel}
+}
+@media(max-width:560px){
+ .mode-select-screen{padding:14px 0 30px!important}
+ .mode-select-frame{padding:0 10px 14px;width:100%}
+ .mode-select-heading{margin:0 -10px;min-height:56px}
+ .mode-select-list{gap:11px}
+ .mode-select-card{padding:5px}
+ .mode-art{height:clamp(104px,28vw,142px)}
+ .mode-card-copy{padding:8px 8px 7px}
+ .mode-card-copy>b{font-size:12px}
+ .mode-card-copy small{font-size:13px}
+}
