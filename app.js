@@ -10,6 +10,26 @@ const species=["Human","Demon","Angel","Elf","Orc","Beastkin","Undead","Dragon",
 const prices={Common:100,Uncommon:250,Rare:500,Epic:1000,Legendary:2500,Mythical:5000,Divine:10000},rank=Object.fromEntries(rarities.map((x,i)=>[x,i]));
 const a=["Ashen","Vesper","Morrow","Thorn","Cinder","Silver","Dread","Hollow","Ember","Frost","Riven","Gloom","Storm","Ebon","Warden","Dusk","Briar","Rune","Grim","Solar","Onyx","Vale","Crimson","Wraith","Iron","Star","Mire","Sable","Aether","Night"],b=["fang","warden","weaver","blade","caller","born","shade","keeper","maw","strider","heart","reaver","song","breaker","watcher","thorn","hunter","flame","scale","whisper","bloom","claw","mancer","sentinel","howl","drake","veil","walker","seer","crown"],icons=["🧙","🧝","🧛","👹","🪽","🐺","💀","🐉","🗿","👾","🔥","🦄"];
 const cards=Array.from({length:900},(_,i)=>({id:i+1,name:a[i%a.length]+" "+b[Math.floor(i/a.length)%b.length],species:species[i%12],element:elements[(i*7)%12],rarity:rarities[Math.min(6,Math.floor(i/150))],power:35+(i*17)%66,speed:30+(i*23)%71,defense:30+(i*13)%71,attack:["Ember Rend","Tempest Arc","Grave Bloom","Starfall","Rift Breaker","Frostbite Spiral"][i%6],icon:icons[i%12],owned:i<25}));
+function dismissTitleMenu(){const screen=$("#titleScreen");screen?.classList.add("dismissed");document.body.classList.remove("title-menu-open")}
+function restoreTitleMenu(){const screen=$("#titleScreen");screen?.classList.remove("dismissed");document.body.classList.add("title-menu-open")}
+function enterModes(){const saved=readStore("varethia.characterDraft",null);if(saved&&saved.name){draft=saved;$("#hubCharacterName").textContent=saved.name.toUpperCase();$("#hubDraftName").textContent="DRAFT: "+saved.name;dismissTitleMenu();showHub("modeView","01 / MODE SELECTION")}else{dismissTitleMenu();openCharacter()}}
+document.querySelectorAll("[data-title-action]").forEach(button=>button.addEventListener("click",()=>{
+ const action=button.dataset.titleAction,saved=readStore("varethia.characterDraft",null);
+ if(action==="new"){dismissTitleMenu();openCharacter()}
+ else if(action==="continue"){if(saved&&saved.name){draft=saved;$("#hubCharacterName").textContent=saved.name.toUpperCase();$("#hubDraftName").textContent="DRAFT: "+saved.name;dismissTitleMenu();showHub("modeView","01 / MODE SELECTION")}else{dismissTitleMenu();openCharacter()}}
+ else if(action==="modes")enterModes();
+ else if(action==="collection"){if(saved&&saved.name){draft=saved;$("#hubCharacterName").textContent=saved.name.toUpperCase();dismissTitleMenu();showHub("teamView","03 / TEAM CONFIGURATION");showHub("collectionView","04 / CHARACTER COLLECTION")}else{dismissTitleMenu();openCharacter()}}
+ else if(action==="codex"){dismissTitleMenu();document.querySelector("#world")?.scrollIntoView({behavior:"smooth"})}
+ else if(action==="settings"){$("#titleOptionsPanel").classList.add("open");$("#titleOptionsPanel").setAttribute("aria-hidden","false")}
+ else if(action==="exit")dismissTitleMenu();
+}));
+$("#titleOptionsClose").addEventListener("click",()=>{$("#titleOptionsPanel").classList.remove("open");$("#titleOptionsPanel").setAttribute("aria-hidden","true")});
+const menuMotion=readStore("varethia.menuMotion",true),menuGlow=readStore("varethia.menuGlow",true);
+$("#menuMotionToggle").checked=menuMotion;$("#menuGlowToggle").checked=menuGlow;
+document.body.classList.toggle("menu-no-motion",!menuMotion);document.body.classList.toggle("menu-no-glow",!menuGlow);
+$("#menuMotionToggle").addEventListener("change",e=>{writeStore("varethia.menuMotion",e.target.checked);document.body.classList.toggle("menu-no-motion",!e.target.checked)});
+$("#menuGlowToggle").addEventListener("change",e=>{writeStore("varethia.menuGlow",e.target.checked);document.body.classList.toggle("menu-no-glow",!e.target.checked)});
+document.body.classList.add("title-menu-open");
 function openCharacter(){modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setTimeout(()=>form.elements.name.focus(),50)}
 function saveCharacterDraft(){
  const name=(form.elements.name.value||"").trim();
