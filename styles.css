@@ -36,3 +36,33 @@
 .lane-unit>b,.lane-unit>small{display:none!important}
 .lane-unit .unit-health{width:76%;height:5px;margin:2px auto 0;background:#352629;border:1px solid rgba(210,175,130,.35);border-radius:5px;overflow:hidden}
 .lane-unit .status-pips{position:absolute;top:0;right:2px;font-size:9px;text-shadow:0 1px 4px #000}
+
+/* Character visibility + isometric unit framing */
+.lane-unit{overflow:visible!important;min-height:118px}
+.lane-unit .unit-icon{position:relative;display:flex!important;width:100%;height:108px;min-height:108px;align-items:center;justify-content:center;overflow:visible!important}
+.lane-unit .unit-icon .three-character-canvas{display:block!important;position:absolute;inset:0;width:100%!important;height:100%!important;z-index:4;pointer-events:none}
+.lane-unit .unit-icon.three-fallback{font-size:30px!important;color:#ead6b7!important}
+.lane-unit .unit-health{position:relative;z-index:5}
+
+/* Four Varethia isometric battlefield environments + seven ambient animation channels */
+.map-picker{display:flex;align-items:center;gap:7px;font:7px Cinzel;letter-spacing:.08em;color:#c8aa80}
+.map-picker select{max-width:150px;padding:6px 8px;background:#171316;border:1px solid #70533f;color:#ead6b7;font:7px Cinzel}
+.battlefield-frame{isolation:isolate}
+.environment-layer{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:.9}
+.lane-grid,.battlefield-title{position:relative;z-index:2}
+.environment-layer i{position:absolute;display:block;pointer-events:none}
+.env-verdant-wilds{background:radial-gradient(ellipse at 18% 18%,rgba(68,115,65,.35),transparent 48%),linear-gradient(155deg,rgba(19,49,37,.55),rgba(15,20,18,.35) 55%,rgba(67,52,31,.3))}
+.env-ashen-wastes{background:radial-gradient(ellipse at 80% 12%,rgba(172,79,45,.25),transparent 42%),linear-gradient(145deg,rgba(78,43,33,.55),rgba(29,23,23,.35) 60%,rgba(79,56,39,.4))}
+.env-frostfall-reach{background:radial-gradient(ellipse at 30% 12%,rgba(104,175,205,.28),transparent 45%),linear-gradient(145deg,rgba(34,67,82,.58),rgba(17,28,39,.38) 60%,rgba(85,107,117,.3))}
+.env-emberfall-caldera{background:radial-gradient(ellipse at 72% 18%,rgba(206,75,30,.3),transparent 48%),linear-gradient(145deg,rgba(73,31,26,.65),rgba(29,20,20,.38) 60%,rgba(108,49,25,.35))}
+.env-weather{inset:-20%;opacity:.23;background:repeating-linear-gradient(112deg,transparent 0 17px,rgba(220,226,220,.22) 18px 19px,transparent 20px 31px);animation:envWeather 7s linear infinite}
+.env-frostfall-reach .env-weather{background:radial-gradient(circle,rgba(220,244,255,.9) 0 1px,transparent 2px);background-size:19px 23px;animation:envSnow 9s linear infinite;opacity:.5}
+.env-ashen-wastes .env-weather{background:radial-gradient(circle,rgba(188,130,87,.7) 0 1px,transparent 2px);background-size:23px 29px;animation:envAsh 11s linear infinite}
+.env-wind{inset:25% -20%;border-top:1px solid rgba(210,218,196,.12);border-bottom:1px solid rgba(210,218,196,.08);transform:skewY(-12deg);animation:envWind 8s ease-in-out infinite}
+.env-foliage{left:-4%;bottom:-25%;width:38%;height:80%;background:radial-gradient(ellipse at 20% 80%,rgba(71,117,62,.3),transparent 68%);animation:envFoliage 5s ease-in-out infinite}
+.env-water{left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(170deg,transparent 0 12px,rgba(113,194,206,.14) 13px 14px,transparent 15px 25px);animation:envWater 5s linear infinite}
+.env-fire{left:10%;right:10%;bottom:0;height:38%;background:radial-gradient(ellipse at 50% 100%,rgba(229,92,42,.23),transparent 68%);animation:envFire 2.4s ease-in-out infinite alternate}
+.env-fog{inset:40% -20% 0;background:linear-gradient(180deg,transparent,rgba(183,177,161,.12),transparent);filter:blur(8px);animation:envFog 10s ease-in-out infinite alternate}
+.env-light{inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(244,205,139,.14),transparent 58%);animation:envLight 6s ease-in-out infinite alternate}
+@keyframes envWeather{to{transform:translate3d(-7%,8%,0)}}@keyframes envSnow{to{background-position:40px 120px}}@keyframes envAsh{to{background-position:-60px 130px}}@keyframes envWind{50%{translate:7px 0;opacity:.55}}@keyframes envFoliage{50%{transform:rotate(3deg) translateX(5px)}}@keyframes envWater{to{background-position:80px 0}}@keyframes envFire{to{opacity:.65;transform:scaleY(1.12)}}@keyframes envFog{to{transform:translateX(10%);opacity:.5}}@keyframes envLight{to{opacity:.45}}
+@media(prefers-reduced-motion:reduce){.environment-layer i{animation:none!important}}
