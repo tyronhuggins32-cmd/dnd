@@ -15,7 +15,7 @@ function addTree(x,z,height,scale=1){
  const group=new THREE.Group();group.position.set(x,0,z);group.scale.setScalar(scale);
  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.22,.42,height*.54,7),material(0x211d14));trunk.position.y=height*.27;group.add(trunk);
  for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry(height*(.23-i*.035),height*(.45-i*.06),7),material(i===0?0x1e2b1b:0x293623));cone.position.y=height*(.48+i*.16);group.add(cone)}
- group.rotation.z=(Math.random()-.5)*.08;scene.add(group);movers.push({object:group,kind:"tree",phase:Math.random()*6});
+ group.rotation.z=(Math.random()-.5)*.08;scene.add(group);movers.push({object:group,kind:"tree",phase:Math.random()*6,baseRotation:group.rotation.z});movers.push({object:group,kind:"tree",phase:Math.random()*6});
 }
 function addRuin(){
  const stone=material(0x68634d),dark=material(0x282d22),glow=material(0xb5c7a0,.28,{emissive:0x718d72,emissiveIntensity:1.2});
@@ -60,8 +60,8 @@ function animate(){
  frame=requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);elapsed+=dt;
  if(!renderer||!scene)return;
  const active=!screen.classList.contains("dismissed");
- if(active&&!reduced&&!transitioning&&camera){camera.position.x=THREE.MathUtils.damp(camera.position.x,pointer.x*1.05,1.05,dt);camera.position.y=THREE.MathUtils.damp(camera.position.y,4.1+pointer.y*.38,1.05,dt);camera.position.z=THREE.MathUtils.damp(camera.position.z,13-Math.abs(pointer.x)*.16,1.05,dt);camera.lookAt(target.x+pointer.x*.34,target.y+pointer.y*.16,target.z)}
- for(const mover of movers){const o=mover.object;if(mover.kind==="tree"&&!reduced)o.rotation.z=Math.sin(elapsed*.28+mover.phase)*.009;if(mover.kind==="ring"&&!reduced)o.rotation.y=elapsed*.18;if(mover.kind==="crystal"){o.rotation.y=elapsed*.35;o.position.y=2.05+Math.sin(elapsed*1.2)*.14}if(mover.kind==="pulseLight"&&!reduced)o.intensity=mover.base+Math.sin(elapsed*1.15)*2.2;if(mover.kind==="fog"&&!reduced)o.position.x=Math.sin(elapsed*.12+mover.phase)*1.3;if(mover.kind==="particles"&&!reduced){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i)+dt*(.12+(i%5)*.025);p.setY(i,y>7.3?.15:y)}p.needsUpdate=true}}
+ if(active&&!reduced&&!transitioning&&camera){const driftX=Math.sin(elapsed*.16)*.18,driftY=Math.sin(elapsed*.11)*.08;camera.position.x=THREE.MathUtils.damp(camera.position.x,pointer.x*1.05+driftX,1.05,dt);camera.position.y=THREE.MathUtils.damp(camera.position.y,4.1+pointer.y*.38+driftY,1.05,dt);camera.position.z=THREE.MathUtils.damp(camera.position.z,13-Math.abs(pointer.x)*.16,1.05,dt);camera.lookAt(target.x+pointer.x*.34+driftX*.25,target.y+pointer.y*.16+driftY*.2,target.z)}
+ for(const mover of movers){const o=mover.object;if(mover.kind==="tree"&&!reduced)o.rotation.z=mover.baseRotation+Math.sin(elapsed*.28+mover.phase)*.009;if(mover.kind==="ring"&&!reduced)o.rotation.y=elapsed*.18;if(mover.kind==="crystal"){o.rotation.y=elapsed*.35;o.position.y=2.05+Math.sin(elapsed*1.2)*.14}if(mover.kind==="pulseLight"&&!reduced)o.intensity=mover.base+Math.sin(elapsed*1.15)*2.2;if(mover.kind==="fog"&&!reduced)o.position.x=Math.sin(elapsed*.12+mover.phase)*1.3;if(mover.kind==="particles"&&!reduced){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i)+dt*(.12+(i%5)*.025);p.setY(i,y>7.3?.15:y)}p.needsUpdate=true}}
  renderer.render(scene,camera);
 }
 try{
