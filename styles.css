@@ -125,3 +125,17 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
 @keyframes fireflyDrift{to{background-position:113px -127px,-120px 182px}}
 @media(max-width:650px){.title-menu-top{margin:clamp(26px,9vh,75px) 0 0 26px}.title-menu-top>b{font-size:clamp(38px,12vw,62px)}.title-menu-options{margin:clamp(24px,6vh,55px) 0 auto 25px;width:min(310px,82vw);gap:3px}.title-menu-options button{font-size:13px;padding:9px 14px}.forest-ruins{left:48%;width:48%;height:36%;bottom:24%;opacity:.8}.tree-c{display:none}.title-menu-footer{font-size:7px;letter-spacing:.08em;margin-bottom:14px}}
 @media(prefers-reduced-motion:reduce){.title-forest:before,.forest-mist,.forest-fireflies{animation:none!important}}
+
+/* Dedicated realtime 3D title-scene layer and cinematic UI transitions */
+.title-scene-viewport{position:absolute;inset:0;z-index:0;overflow:hidden;background:#192219}
+.title-scene-viewport canvas{display:block;width:100%;height:100%;outline:0}
+.title-screen.scene-ready .title-forest{opacity:0;visibility:hidden}
+.title-screen.scene-fallback .title-scene-viewport{display:none}
+.title-screen .title-menu-top,.title-screen .title-menu-options,.title-screen .title-menu-footer,.title-screen .title-options-panel{z-index:5}
+.title-screen .title-vignette{z-index:2}
+.title-screen.cinematic-exit{transform:scale(1.035);filter:brightness(.72);transition:transform .76s cubic-bezier(.2,.7,.2,1),filter .76s ease}
+.title-screen.cinematic-enter{animation:titleSceneEnter .72s cubic-bezier(.2,.7,.2,1) both}
+.title-transition{position:fixed;inset:0;z-index:9999;background:#080d09;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.title-transition.active{opacity:.76}
+@keyframes titleSceneEnter{from{opacity:.2;transform:scale(1.025);filter:brightness(.6)}to{opacity:1;transform:scale(1);filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.title-screen.cinematic-exit,.title-screen.cinematic-enter,.title-transition{transition:none;animation:none}}
