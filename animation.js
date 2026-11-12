@@ -20,24 +20,61 @@ const material=(color,metalness=.2,roughness=.5,emissive=0)=>new THREE.MeshStand
 function part(parent,geometry,mat,name,pos,scale=[1,1,1]){const m=new THREE.Mesh(geometry,mat);m.name=name;m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;parent.add(m);return m}
 function capsule(parent,name,r,len,mat,pos){return part(parent,new THREE.CapsuleGeometry(r,len,4,8),mat,name,pos)}
 function humanoid(species,element){
- const root=new THREE.Group();root.name="VarethiaSharedHumanoidRig";
- const armor=material(0x393239,.72,.32),cloth=material(0x655047,.1,.85),skin=material(species==="Undead"?0x77716b:species==="Orc"?0x63805a:0xc29b7e),gold=material(0xb28b52,.8,.25),accent=material(palette[element]||0x98745b,.3,.4,palette[element]||0),dark=material(0x17151b),eyes=new THREE.MeshStandardMaterial({color:0xffd68a,emissive:0xff9c2e,emissiveIntensity:1.8});
- const torso=new THREE.Group();torso.name="torso";torso.position.y=1.4;root.add(torso);
- capsule(torso,"chest",.29,.42,armor,[0,0,0]).scale.set(1.15,1,.72);
- part(torso,new THREE.BoxGeometry(.24,.5,.06),cloth,"tabard",[0,-.25,.22]);
- const head=new THREE.Group();head.name="head";head.position.set(0,.52,0);torso.add(head);
- part(head,new THREE.SphereGeometry(.22,16,12),skin,"face",[0,0,0],[.9,1.1,.85]);
- part(head,new THREE.SphereGeometry(.04,12,8),eyes,"leftEye",[-.085,.025,.185],[1,.7,.55]);part(head,new THREE.SphereGeometry(.04,12,8),eyes,"rightEye",[.085,.025,.185],[1,.7,.55]);
- part(head,new THREE.SphereGeometry(.235,16,12),gold,"helm",[0,.14,-.015],[1.08,.58,.96]);
- const armL=new THREE.Group();armL.name="armL";armL.position.set(-.38,.2,0);torso.add(armL);capsule(armL,"upperArmL",.1,.3,armor,[0,-.16,0]);capsule(armL,"foreArmL",.085,.26,cloth,[0,-.49,0]);
- const armR=new THREE.Group();armR.name="armR";armR.position.set(.38,.2,0);torso.add(armR);capsule(armR,"upperArmR",.1,.3,armor,[0,-.16,0]);capsule(armR,"foreArmR",.085,.26,cloth,[0,-.49,0]);
- const weapon=new THREE.Group();weapon.name="weapon";weapon.position.set(.02,-.62,.02);armR.add(weapon);
- part(weapon,new THREE.BoxGeometry(.055,.72,.035),gold,"blade",[0,.36,0]);part(weapon,new THREE.BoxGeometry(.18,.055,.08),gold,"guard",[0,.02,0]);part(weapon,new THREE.BoxGeometry(.045,.2,.045),dark,"grip",[0,-.1,0]);part(weapon,new THREE.BoxGeometry(.018,.65,.012),accent,"rune",[.037,.36,.02]);
- const legL=new THREE.Group();legL.name="legL";legL.position.set(-.16,1.1,0);root.add(legL);capsule(legL,"thighL",.12,.34,cloth,[0,-.2,0]);capsule(legL,"shinL",.1,.32,armor,[0,-.53,.02]);
- const legR=new THREE.Group();legR.name="legR";legR.position.set(.16,1.1,0);root.add(legR);capsule(legR,"thighR",.12,.34,cloth,[0,-.2,0]);capsule(legR,"shinR",.1,.32,armor,[0,-.53,.02]);
+ const root=new THREE.Group();root.name="VarethiaStylizedHeroRig";
+ const toon=(color,emissive=0)=>new THREE.MeshToonMaterial({color,emissive,emissiveIntensity:emissive?0.45:0});
+ const armor=toon(0x373044),cloth=toon(0x65404b),skin=toon(species==="Undead"?0xaaa19b:species==="Orc"?0x78a45d:species==="Elf"?0xe4bd9b:0xe8bd9b),gold=toon(0xd6a64f),accent=toon(palette[element]||0x98745b,palette[element]||0),dark=toon(0x211d2a),eyeWhite=toon(0xfff0d9),iris=toon(0x3e9b9c),pupil=toon(0x211c27);
+ const torso=new THREE.Group();torso.name="torso";torso.position.y=1.02;root.add(torso);
+ part(torso,new THREE.SphereGeometry(.34,20,16),armor,"chest",[0,0,0],[1.08,1.22,.78]);
+ part(torso,new THREE.SphereGeometry(.255,18,14),cloth,"tunic",[0,-.16,.075],[1.04,1.12,.78]);
+ part(torso,new THREE.BoxGeometry(.28,.42,.045),gold,"chest-crest",[0,.02,.285]);
+ part(torso,new THREE.SphereGeometry(.12,14,10),accent,"element-gem",[0,.19,.31]);
+ part(torso,new THREE.TorusGeometry(.27,.045,8,18),gold,"belt",[0,-.31,.015],[1,1,.7]);
+ const cape=new THREE.Group();cape.name="cape";cape.position.set(0,.22,-.2);torso.add(cape);
+ part(cape,new THREE.ConeGeometry(.36,.78,5),cloth,"hero-cape",[0,-.43,-.02],[1,.9,.22]).rotation.x=-Math.PI;
+ const head=new THREE.Group();head.name="head";head.position.set(0,.48,.02);torso.add(head);
+ part(head,new THREE.SphereGeometry(.32,24,20),skin,"face",[0,0,.035],[1.02,1.08,.88]);
+ part(head,new THREE.SphereGeometry(.12,14,10),skin,"earL",[-.31,-.015,0],[.55,.8,.45]);part(head,new THREE.SphereGeometry(.12,14,10),skin,"earR",[.31,-.015,0],[.55,.8,.45]);
+ for(const side of [-1,1]){
+  part(head,new THREE.SphereGeometry(.095,16,12),eyeWhite,"eyeSocket",[side*.125,.025,.295],[1,.9,.42]);
+  part(head,new THREE.SphereGeometry(.055,14,10),iris,"iris",[side*.115,.018,.337],[1,1,.55]);
+  part(head,new THREE.SphereGeometry(.027,12,8),pupil,"pupil",[side*.112,.018,.36]);
+  part(head,new THREE.SphereGeometry(.105,12,8),dark,"eyebrow",[side*.125,.145,.29],[1.2,.25,.4]);
+ }
+ part(head,new THREE.SphereGeometry(.045,12,8),gold,"nose",[0,-.055,.33],[.8,.7,.6]);
+ part(head,new THREE.TorusGeometry(.055,.012,6,12,Math.PI),dark,"smile",[0,-.145,.304]).rotation.z=Math.PI;
+ const helm=new THREE.Group();helm.name="helm";helm.position.y=.24;head.add(helm);
+ part(helm,new THREE.SphereGeometry(.335,20,14,0,Math.PI*2,0,Math.PI*.56),gold,"helmet-crown",[0,.02,-.005],[1.08,.82,.98]);
+ part(helm,new THREE.BoxGeometry(.47,.075,.055),accent,"helmet-band",[0,-.095,.285]);
+ part(helm,new THREE.ConeGeometry(.09,.24,5),accent,"helmet-crest",[0,.31,-.005]);
+ if(species==="Demon"||species==="Orc"){for(const side of [-1,1])part(helm,new THREE.ConeGeometry(.075,.28,6),species==="Demon"?dark:gold,"horn",[side*.25,.18,-.02],[1,1.25,1]).rotation.z=-side*.5}
+ if(species==="Elf")for(const side of [-1,1])part(head,new THREE.ConeGeometry(.07,.3,5),skin,"elf-ear",[side*.36,.02,0],[.7,1.4,.6]).rotation.z=-side*.9;
+ const armL=new THREE.Group();armL.name="armL";armL.position.set(-.37,.12,0);torso.add(armL);
+ const armR=new THREE.Group();armR.name="armR";armR.position.set(.37,.12,0);torso.add(armR);
+ for(const [arm,side] of [[armL,-1],[armR,1]]){
+  part(arm,new THREE.SphereGeometry(.16,16,12),gold,"shoulder-pad",[side*.015,-.015,0],[1.2,.9,1]);
+  capsule(arm,"upperArm",.105,.23,skin,[0,-.18,.015]);
+  capsule(arm,"foreArm",.105,.22,armor,[0,-.43,.035]);
+  part(arm,new THREE.SphereGeometry(.12,14,10),gold,"gauntlet",[0,-.57,.055]);
+ }
+ const weapon=new THREE.Group();weapon.name="weapon";weapon.position.set(.02,-.62,.06);armR.add(weapon);
+ part(weapon,new THREE.CapsuleGeometry(.055,.62,4,8),gold,"blade",[0,.39,0]).rotation.z=-.08;
+ part(weapon,new THREE.BoxGeometry(.24,.065,.08),gold,"guard",[0,.08,0]);
+ part(weapon,new THREE.CylinderGeometry(.045,.055,.22,10),dark,"grip",[0,-.055,0]);
+ part(weapon,new THREE.SphereGeometry(.07,12,10),accent,"pommel",[0,-.18,0]);
+ const legL=new THREE.Group();legL.name="legL";legL.position.set(-.16,.62,0);root.add(legL);
+ const legR=new THREE.Group();legR.name="legR";legR.position.set(.16,.62,0);root.add(legR);
+ for(const [leg,side] of [[legL,-1],[legR,1]]){
+  capsule(leg,"thigh",.13,.22,cloth,[0,-.13,0]);
+  capsule(leg,"greave",.12,.24,armor,[0,-.36,.015]);
+  part(leg,new THREE.SphereGeometry(.15,14,10),gold,"boot",[0,-.51,.075],[1.1,.65,1.35]);
+ }
  const wings=[];
- if(["Angel","Demon"].includes(species))for(const side of [-1,1]){const w=new THREE.Group();w.name="wing"+side;w.position.set(side*.28,1.55,-.1);root.add(w);part(w,new THREE.BoxGeometry(.62,.06,.32),species==="Angel"?gold:accent,"wing",[side*.28,0,0]);wings.push(w)}
- root.userData.rig={torso,head,armL,armR,legL,legR,weapon,wings};return root;
+ if(["Angel","Demon"].includes(species))for(const side of [-1,1]){
+  const w=new THREE.Group();w.name="wing"+side;w.position.set(side*.28,.22,-.22);root.add(w);
+  for(let j=0;j<4;j++)part(w,new THREE.SphereGeometry(.13,12,8),species==="Angel"?gold:accent,"feather",[side*(.12+j*.08),.13-j*.12,-j*.025],[.7,1.7,.35]).rotation.z=-side*.35;
+  wings.push(w);
+ }
+ root.userData.rig={torso,head,armL,armR,legL,legR,weapon,wings,cape};return root;
 }
 function beast(species,element){
  const root=new THREE.Group();root.name="VarethiaCreatureRig";const hide=material(0x51433d),accent=material(palette[element]||0x98745b,.3,.4,palette[element]||0),eyes=new THREE.MeshStandardMaterial({color:0xffd68a,emissive:0xff9c2e,emissiveIntensity:1.8});
