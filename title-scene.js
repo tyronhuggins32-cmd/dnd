@@ -63,8 +63,8 @@ function animate(){
  renderer.render(scene,camera);
 }
 try{
- renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:"low-power"});renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;renderer.setClearColor(0x192219,1);host.appendChild(renderer.domElement);host.classList.add("scene-ready");build();resize();new ResizeObserver(resize).observe(host);animate();
-}catch(error){console.warn("Varethia 3D title scene unavailable; CSS scene fallback remains active.",error);host.classList.add("scene-fallback")}
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:"low-power"});renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;renderer.setClearColor(0x192219,1);host.appendChild(renderer.domElement);screen.classList.add("scene-ready");build();resize();new ResizeObserver(resize).observe(host);animate();
+}catch(error){console.warn("Varethia 3D title scene unavailable; CSS scene fallback remains active.",error);screen.classList.add("scene-fallback")}
 window.addEventListener("pointermove",e=>{if(reduced)return;pointer.x=(e.clientX/innerWidth-.5)*2;pointer.y=(e.clientY/innerHeight-.5)*2},{passive:true});
 function playSelectSound(){try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;const ctx=new Audio(),now=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(660,now);osc.frequency.exponentialRampToValueAtTime(440,now+.12);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.045,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.2);osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.21);osc.onended=()=>ctx.close()}catch{}}
 const overlay=document.createElement("div");overlay.className="title-transition";document.body.appendChild(overlay);
