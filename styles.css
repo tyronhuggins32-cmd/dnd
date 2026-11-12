@@ -155,3 +155,12 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
 .title-transition{pointer-events:none!important}
 @media(hover:none){.title-menu-options button:hover{transform:translateZ(0);box-shadow:none}.title-menu-options button:active{transform:translate3d(2px,1px,6px) scale(.985)}}
 @media(prefers-reduced-motion:reduce){.title-menu-options button{transition:none!important;will-change:auto}}
+
+/* Final interaction-layer correction: gameplay dialogs must sit above the title screen during its fade. */
+.title-screen{z-index:40}
+.title-screen .title-menu-options{position:relative;z-index:6;pointer-events:auto}
+.title-screen .title-menu-options button{pointer-events:auto;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.title-screen .title-menu-options button:disabled{opacity:.65;cursor:wait}
+.title-scene-viewport,.title-vignette,.title-forest{pointer-events:none!important}
+.title-options-panel{position:absolute!important;z-index:12!important;pointer-events:auto}
+.title-options-close{pointer-events:auto}
