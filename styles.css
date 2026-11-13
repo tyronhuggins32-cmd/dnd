@@ -310,3 +310,44 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
 .account-player-row .account-text-btn{margin:0}
 .account-panel [hidden]{display:none!important}
 @media(max-width:460px){.account-panel{padding:13px}.account-actions>*{min-width:100%}}
+
+
+/* CINEMATIC FIVE-LANE BATTLEFIELD UPGRADE */
+.battlefield-frame{position:relative;isolation:isolate;overflow:hidden;padding:clamp(12px,2vw,22px);border:1px solid rgba(211,174,112,.72);background:radial-gradient(ellipse at 50% 0%,rgba(117,153,125,.18),transparent 52%),linear-gradient(145deg,#222c27 0%,#141a19 48%,#21191b 100%);box-shadow:0 18px 48px rgba(0,0,0,.48),inset 0 0 0 4px rgba(199,163,104,.09),inset 0 0 42px rgba(0,0,0,.55)}
+.battlefield-frame:before{content:"";position:absolute;inset:8px;z-index:-1;pointer-events:none;border:1px solid rgba(207,181,132,.18);background:repeating-linear-gradient(115deg,transparent 0 42px,rgba(255,255,255,.012) 43px 44px)}
+.battlefield-frame:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.48;background:radial-gradient(circle at 50% 55%,transparent 0 35%,rgba(0,0,0,.48) 100%)}
+.battlefield-title{position:relative;z-index:1;align-items:center;padding:4px 8px 12px;color:#dfc89f;font:9px Cinzel;letter-spacing:.17em;text-shadow:0 2px 8px #000}
+.battlefield-title>span:first-child{color:#d28b78}.battlefield-title>span:last-child{color:#9dbb9a}
+.lane-grid{position:relative;z-index:1;gap:clamp(5px,1vw,11px);perspective:1000px}
+.battle-lane{padding:10px 7px 8px;min-height:300px;overflow:hidden;border:1px solid rgba(196,163,115,.52);background:linear-gradient(180deg,rgba(10,17,16,.58),rgba(16,19,18,.2) 45%,rgba(7,11,11,.64)),repeating-linear-gradient(0deg,rgba(206,187,148,.035) 0 1px,transparent 1px 28px),linear-gradient(145deg,#455449 0%,#263b32 38%,#182620 72%,#2d2925 100%);box-shadow:inset 0 0 25px rgba(0,0,0,.58),0 6px 14px rgba(0,0,0,.26);transform:translateZ(0);transition:border-color .25s,filter .25s,box-shadow .25s}
+.battle-lane:nth-child(2){background:linear-gradient(180deg,rgba(30,10,12,.5),rgba(10,8,10,.6)),repeating-linear-gradient(0deg,rgba(202,142,121,.04) 0 1px,transparent 1px 28px),linear-gradient(145deg,#56332f,#321f22 60%,#1b171a)}
+.battle-lane:nth-child(3){background:linear-gradient(180deg,rgba(10,13,22,.5),rgba(8,10,16,.65)),repeating-linear-gradient(0deg,rgba(163,174,210,.04) 0 1px,transparent 1px 28px),linear-gradient(145deg,#35465a,#202c3b 60%,#171c28)}
+.battle-lane:nth-child(4){background:linear-gradient(180deg,rgba(12,18,28,.55),rgba(8,10,17,.68)),repeating-linear-gradient(0deg,rgba(158,207,226,.05) 0 1px,transparent 0 28px),linear-gradient(145deg,#3c5964,#243744 60%,#151d27)}
+.battle-lane:nth-child(5){background:linear-gradient(180deg,rgba(18,10,28,.55),rgba(9,8,16,.7)),repeating-linear-gradient(0deg,rgba(187,154,218,.045) 0 1px,transparent 0 28px),linear-gradient(145deg,#493653,#292238 60%,#171522)}
+.battle-lane:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(229,206,163,.06),transparent);transform:translateX(-110%);animation:laneRuneSweep 9s ease-in-out infinite}
+.battle-lane:nth-child(2):before{animation-delay:-2s}.battle-lane:nth-child(3):before{animation-delay:-4s}.battle-lane:nth-child(4):before{animation-delay:-6s}.battle-lane:nth-child(5):before{animation-delay:-8s}
+.lane-name{font-size:clamp(7px,.8vw,9px);letter-spacing:.09em;color:#e4cfaa;text-shadow:0 1px 7px #000;padding:7px 0 10px;border-bottom:1px solid rgba(216,184,132,.35)}
+.lane-side{position:relative;min-height:112px;padding:9px 0;gap:8px}.lane-side.enemy-side{border-bottom:1px solid rgba(193,105,91,.42)}.lane-side.player-side{border-top:1px solid rgba(139,185,139,.4)}
+.lane-side-label{font-size:7px;letter-spacing:.1em;color:rgba(226,211,184,.72)}
+.lane-unit{min-height:126px;padding:5px 5px 8px;overflow:visible;border:1px solid rgba(205,175,128,.42);background:linear-gradient(155deg,rgba(51,63,53,.9),rgba(17,23,21,.94));box-shadow:0 5px 13px rgba(0,0,0,.3),inset 0 0 18px rgba(191,165,115,.06);transform-origin:center bottom}
+.lane-unit.enemy-unit{border-color:rgba(177,101,91,.56);background:linear-gradient(155deg,rgba(69,37,39,.94),rgba(22,15,19,.96))}
+.lane-unit .unit-icon{position:relative;display:block;width:100%;height:94px;margin:0 auto;font-size:0!important;color:transparent!important;line-height:0;filter:drop-shadow(0 8px 7px rgba(0,0,0,.65))}
+.lane-unit .unit-icon:after{content:"";position:absolute;left:18%;right:18%;bottom:1px;height:12px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 72%);pointer-events:none}
+.lane-unit .three-character-canvas{position:relative;z-index:1;display:block;width:100%!important;height:100%!important}
+.lane-unit b{font-size:8px;letter-spacing:.025em}
+.lane-unit.attacking{animation:none}.lane-unit.attacking .unit-icon{animation:unitLungeForward .72s cubic-bezier(.2,.75,.25,1) both;filter:drop-shadow(0 0 12px rgba(242,196,116,.8))}.enemy-unit.attacking .unit-icon{animation-name:unitLungeBack}
+.lane-unit.hit{animation:unitImpactShake .32s ease}
+.lane-unit.attacking:before{content:"";position:absolute;z-index:3;left:15%;right:15%;top:38%;height:2px;background:linear-gradient(90deg,transparent,#ffe0a1,transparent);box-shadow:0 0 15px #f5c87e;animation:weaponTrail .42s ease-out both;pointer-events:none}
+.unit-health{height:5px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.08);margin-top:4px}.unit-health i{box-shadow:0 0 8px currentColor}
+.lane-place{position:relative;z-index:2;min-height:28px;border-color:rgba(204,173,125,.3);background:rgba(8,13,12,.58);letter-spacing:.035em}
+.lane-place.available{box-shadow:0 0 13px rgba(224,187,119,.18);animation:slotPulse 1.8s ease-in-out infinite}
+.commander-avatar{position:relative;display:grid;place-items:center;flex:0 0 62px;width:62px;height:76px;font-size:0!important;color:transparent!important;overflow:hidden}
+.commander-avatar .three-character-canvas{display:block;width:100%!important;height:100%!important}
+@keyframes laneRuneSweep{0%,68%,100%{transform:translateX(-110%);opacity:0}78%{opacity:.7}94%{transform:translateX(110%);opacity:0}}
+@keyframes unitLungeForward{0%{transform:translateX(0) translateY(0) scale(1)}28%{transform:translateX(20px) translateY(-7px) scale(1.08)}46%{transform:translateX(27px) translateY(-3px) scale(1.1)}72%{transform:translateX(9px) translateY(0) scale(1.03)}100%{transform:translateX(0) translateY(0) scale(1)}}
+@keyframes unitLungeBack{0%{transform:translateX(0) translateY(0) scale(1)}28%{transform:translateX(-20px) translateY(-7px) scale(1.08)}46%{transform:translateX(-27px) translateY(-3px) scale(1.1)}72%{transform:translateX(-9px) translateY(0) scale(1.03)}100%{transform:translateX(0) translateY(0) scale(1)}}
+@keyframes unitImpactShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}55%{transform:translateX(4px)}}
+@keyframes weaponTrail{0%{opacity:0;transform:scaleX(.1) rotate(-15deg)}35%{opacity:1;transform:scaleX(1.1) rotate(0)}100%{opacity:0;transform:scaleX(.5) rotate(12deg)}}
+@keyframes slotPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.28)}}
+@media(max-width:720px){.battlefield-frame{padding:8px}.lane-grid{gap:4px}.battle-lane{padding:7px 3px;min-height:250px}.lane-side{min-height:92px}.lane-unit{min-height:104px;padding:4px 2px 6px}.lane-unit .unit-icon{height:76px}.lane-unit b{font-size:6px}.lane-side-label{font-size:6px;letter-spacing:.02em}.lane-place{font-size:6px;padding:4px 1px}.commander-avatar{width:50px;height:64px;flex-basis:50px}}
+@media(prefers-reduced-motion:reduce){.battle-lane:before,.lane-place.available,.lane-unit.attacking .unit-icon,.lane-unit.hit{animation:none}}
