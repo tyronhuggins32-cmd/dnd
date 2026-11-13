@@ -481,3 +481,12 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
 .detail-actions button{padding:9px 11px;border:1px solid #9e78bc;background:#30233b;color:#f0ddff;font:8px Cinzel}
 @media(max-width:900px){.character-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){.character-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.character-card{padding:7px}.card-art-frame{height:clamp(150px,48vw,220px);min-height:150px}.card-name{font-size:10px}.card-species{font-size:8px}.card-stats b{font-size:9px}#cardDetail.detail-open{grid-template-columns:1fr;gap:12px}.detail-art{height:245px}.detail-copy h3{font-size:20px}}
+
+/* Portrait fallback artwork: retain a complete illustrated silhouette if 3D cannot initialize */
+.card-art-frame.art-failed .art-fallback{display:grid;place-items:center;font-size:0;background:radial-gradient(ellipse at 50% 36%,#a98acb 0%,#5b4774 28%,#272337 68%,#15131d 100%)}
+.card-art-frame.art-failed .art-fallback:before{content:"";position:absolute;top:13%;left:50%;width:32%;height:34%;transform:translateX(-50%);border-radius:48% 48% 42% 42%;background:linear-gradient(145deg,#d5b99a,#77617c 65%,#392d43);box-shadow:0 0 0 5px #d6b7ee22,0 0 24px #cba1ff66}
+.card-art-frame.art-failed .art-fallback:after{content:"";position:absolute;left:50%;bottom:-9%;width:78%;height:57%;transform:translateX(-50%);border-radius:48% 48% 8% 8%;background:linear-gradient(115deg,#30253e,#a28ab4 48%,#2a2238);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);box-shadow:inset 0 0 20px #e9d5ff55}
+.card-art-frame.art-failed .card-avatar{visibility:hidden}
+.card-art-frame.art-failed:after{content:attr(data-fallback-label);position:absolute;z-index:4;left:0;right:0;bottom:7px;text-align:center;color:#e9d8fa;font:8px Cinzel;letter-spacing:.12em;text-shadow:0 2px 5px #000}
+.card-art-frame.art-ready .art-fallback{display:none}
+.card-art-frame.art-ready .card-avatar{visibility:visible}
