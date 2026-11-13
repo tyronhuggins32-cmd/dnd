@@ -404,3 +404,37 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
  .illustrated-map .dungeon-location{left:37%;bottom:3%}
  .illustrated-map .ranked-location{right:2%;bottom:17%}
 }
+
+/* Living world-map motion and local ambient soundtrack control */
+.illustrated-map{isolation:isolate}
+.map-cloud-bank{position:absolute;z-index:1;pointer-events:none;left:-22%;width:54%;height:16%;border-radius:50%;background:radial-gradient(ellipse,#f2fcffb8 0%,#d8f6ff80 35%,transparent 72%);filter:blur(9px);opacity:.7}
+.cloud-bank-a{top:12%;animation:cloudSail 42s linear infinite}
+.cloud-bank-b{top:67%;width:42%;height:13%;opacity:.48;animation:cloudSail 57s linear infinite reverse}
+@keyframes cloudSail{from{transform:translateX(0)}to{transform:translateX(260%)}}
+.map-waterfall-live{position:absolute;z-index:2;left:28.3%;top:52%;width:3.5%;height:30%;pointer-events:none;overflow:hidden;transform:skewY(8deg);background:linear-gradient(90deg,#25a9e8aa,#d7ffff,#48d8ffcc);box-shadow:0 0 14px #6ce8ff;clip-path:polygon(12% 0,100% 0,85% 100%,0 100%)}
+.map-waterfall-live i{position:absolute;top:-100%;width:2px;height:220%;background:#e5ffffaa;animation:waterfallStream 1.15s linear infinite}
+.map-waterfall-live i:nth-child(1){left:24%;animation-delay:-.4s}.map-waterfall-live i:nth-child(2){left:58%;animation-delay:-.8s}.map-waterfall-live i:nth-child(3){left:82%;animation-delay:-.2s}
+@keyframes waterfallStream{to{transform:translateY(85%)}}
+.map-volcano-glow{position:absolute;z-index:1;right:15%;top:48%;width:19%;height:24%;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse,#ff8b1a55 0%,#fa3c1644 35%,transparent 72%);animation:volcanoBreath 3.5s ease-in-out infinite}
+.map-eruption{position:absolute;z-index:2;right:22%;top:36%;width:11%;height:23%;pointer-events:none;opacity:0;animation:eruptionBurst 8s ease-in-out infinite}
+.map-eruption i{position:absolute;bottom:0;left:48%;width:12px;height:20px;border-radius:60% 20% 55% 25%;background:linear-gradient(#fff2a4,#ff8a1d 45%,#e52c12);box-shadow:0 0 14px #ff6a18;animation:lavaEmber 1.2s ease-out infinite}
+.map-eruption i:nth-child(2){left:24%;animation-delay:.2s}.map-eruption i:nth-child(3){left:70%;animation-delay:.45s}
+@keyframes volcanoBreath{50%{opacity:.55;transform:scale(1.13)}}
+@keyframes eruptionBurst{0%,58%,100%{opacity:0;transform:translateY(10px)}62%,78%{opacity:1;transform:translateY(-14px)}}
+@keyframes lavaEmber{to{transform:translateY(-70px) rotate(30deg) scale(.3);opacity:0}}
+.map-roaming-creature{position:absolute;z-index:2;pointer-events:none;font-size:clamp(15px,2.2vw,27px);filter:drop-shadow(0 3px 2px #10251b);animation:creatureWander 16s ease-in-out infinite}
+.creature-deer{left:13%;top:52%;animation-delay:-4s}.creature-wolf{left:36%;top:66%;animation-delay:-10s}.creature-drake{right:17%;top:60%;font-size:clamp(18px,2.8vw,34px);animation:drakePatrol 19s ease-in-out infinite}
+@keyframes creatureWander{0%,100%{transform:translate(0,0) scaleX(1)}24%{transform:translate(36px,-8px) scaleX(1)}26%{transform:translate(38px,-8px) scaleX(-1)}55%{transform:translate(-15px,4px) scaleX(-1)}58%{transform:translate(-14px,4px) scaleX(1)}}
+@keyframes drakePatrol{0%,100%{transform:translate(0,0) scaleX(1)}45%{transform:translate(-38px,-18px) scaleX(1)}50%{transform:translate(-40px,-18px) scaleX(-1)}80%{transform:translate(10px,-5px) scaleX(-1)}}
+.map-fireflies{position:absolute;inset:0;z-index:2;pointer-events:none}
+.map-fireflies i{position:absolute;width:5px;height:5px;border-radius:50%;background:#fff3a2;box-shadow:0 0 12px 4px #fff2a2;animation:fireflyBlink 2.4s ease-in-out infinite}
+.map-fireflies i:nth-child(1){left:21%;top:39%}.map-fireflies i:nth-child(2){left:34%;top:48%;animation-delay:.5s}.map-fireflies i:nth-child(3){left:45%;top:29%;animation-delay:1s}.map-fireflies i:nth-child(4){right:19%;top:40%;animation-delay:.8s}.map-fireflies i:nth-child(5){right:27%;top:59%;animation-delay:1.4s}.map-fireflies i:nth-child(6){left:17%;top:62%;animation-delay:1.8s}
+@keyframes fireflyBlink{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1.5)}}
+.illustrated-map .map-location{animation:markerHover 3.8s ease-in-out infinite;box-shadow:0 5px 14px #000b,0 0 0 2px #3c2b1d88,0 0 17px #ffd47755}
+.illustrated-map .map-location:nth-of-type(2){animation-delay:-.6s}.illustrated-map .map-location:nth-of-type(3){animation-delay:-1.4s}.illustrated-map .map-location:nth-of-type(4){animation-delay:-2.2s}.illustrated-map .map-location:nth-of-type(5){animation-delay:-2.8s}
+@keyframes markerHover{0%,100%{filter:brightness(1);box-shadow:0 5px 14px #000b,0 0 0 2px #3c2b1d88,0 0 12px #ffd47744}50%{filter:brightness(1.25);box-shadow:0 5px 18px #000b,0 0 0 2px #3c2b1d88,0 0 25px #ffe69cbb}}
+.map-audio-toggle{position:absolute;z-index:8;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #e9ca91;border-radius:24px;background:#171c23eF;color:#f6e1b8;font:9px Cinzel;letter-spacing:.08em;box-shadow:0 4px 14px #0009}
+.map-audio-toggle .audio-icon{font-size:17px;color:#f4ce7c}
+.map-audio-toggle[aria-pressed="true"]{background:#34472f;border-color:#c5e39c;box-shadow:0 0 18px #a5df7a66}
+@media(max-width:650px){.map-audio-toggle{right:7px;bottom:7px;padding:8px 10px;font-size:8px}.map-waterfall-live{height:25%;top:57%}.map-roaming-creature{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.map-cloud-bank,.map-waterfall-live i,.map-volcano-glow,.map-eruption,.map-eruption i,.map-roaming-creature,.map-fireflies i,.illustrated-map .map-location{animation:none!important}}
