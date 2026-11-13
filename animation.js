@@ -17,6 +17,66 @@ const observer = new IntersectionObserver(entries=>entries.forEach(e=>{
 }),{rootMargin:"240px"});
 const palette={Fire:0xb94d32,Water:0x4a8fb4,Earth:0x8d7654,Wind:0xb7c9c7,Ice:0x8bd6e8,Lightning:0xe3c75b,Nature:0x63945b,Shadow:0x6d5a91,Light:0xe5d5a0,Blood:0x9c3042,Metal:0x9aa3ad,Void:0x76519d};
 const material=(color,metalness=.2,roughness=.5,emissive=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness,emissive,emissiveIntensity:.5});
+
+/* Cinematic 3D arena: persistent terrain, lane inlays, pillars, crystals and fog. */
+function mountArenaScene(){
+ const frame=document.querySelector("#battlefieldFrame"),canvas=document.querySelector("#arenaSceneCanvas");
+ if(!frame||!canvas||canvas.dataset.ready)return;
+ canvas.dataset.ready="true";
+ let renderer,scene,camera,raf=0;const clock=new THREE.Clock(),runes=[],embers=[];
+ try{
+  renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"low-power"});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x101b19,.055);
+  camera=new THREE.PerspectiveCamera(38,1,.1,80);camera.position.set(0,11,17);camera.lookAt(0,0,0);
+  scene.add(new THREE.HemisphereLight(0xc7d9d2,0x17131b,1.8));
+  const key=new THREE.DirectionalLight(0xffd9a2,2.4);key.position.set(-5,10,7);key.castShadow=true;scene.add(key);
+  const fill=new THREE.PointLight(0x5eaf9d,3,26);fill.position.set(0,4,0);scene.add(fill);
+  const floorMat=new THREE.MeshStandardMaterial({color:0x35433a,roughness:.92});
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(22,18,1,1),floorMat);floor.rotation.x=-Math.PI/2;floor.position.y=-.28;floor.receiveShadow=true;scene.add(floor);
+  const stoneMat=new THREE.MeshStandardMaterial({color:0x5d594e,roughness:.9}),darkMat=new THREE.MeshStandardMaterial({color:0x242b28,roughness:.95});
+  const crystalMat=new THREE.MeshStandardMaterial({color:0x63d7ca,emissive:0x187d76,emissiveIntensity:1.4,metalness:.25,roughness:.22});
+  const goldMat=new THREE.MeshStandardMaterial({color:0xc3a36e,emissive:0x8a5924,emissiveIntensity:.55,metalness:.65,roughness:.32});
+  const add=(geo,mat,x,y,z,sx=1,sy=1,sz=1)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;scene.add(m);return m};
+  add(new THREE.BoxGeometry(18,.42,14),darkMat,0,-.5,0,1,1,1);
+  // Five raised stone lanes with luminous engraved borders and central rune seams.
+  for(let i=0;i<5;i++){
+   const x=(i-2)*3.35;
+   add(new THREE.BoxGeometry(3.12,.18,12.8),stoneMat,x,-.16,0);
+   const glow=new THREE.MeshBasicMaterial({color:[0x8bc7a0,0xd27c61,0x9ec8f0,0x74d8ec,0xb895e8][i],transparent:true,opacity:.68});
+   for(const side of [-1,1])add(new THREE.BoxGeometry(.035,.035,12.2),glow,x+side*1.48,-.055,0);
+   for(let z=-5.2;z<=5.2;z+=2.6){const rune=add(new THREE.TorusGeometry(.25,.018,5,24),glow,x,-.045,z);rune.rotation.x=Math.PI/2;runes.push(rune)}
+   for(let z of [-6.1,6.1])add(new THREE.BoxGeometry(3.18,.3,.28),goldMat,x,-.02,z);
+  }
+  // Broken colonnades and huge ruined arches framing the field.
+  for(const side of [-1,1])for(let i=0;i<4;i++){
+   const x=side*(9.0+(i%2)*.25),z=-5.4+i*3.6;
+   add(new THREE.CylinderGeometry(.42,.58,4.8,8),stoneMat,x,2.1,z);
+   add(new THREE.CylinderGeometry(.68,.68,.38,8),goldMat,x,4.55,z);
+   add(new THREE.BoxGeometry(1.2,.65,1.1),stoneMat,x,4.95,z);
+  }
+  // Crystal clusters on the arena corners and side galleries.
+  for(const [x,z] of [[-8,-6],[-8,6],[8,-6],[8,6],[-7,0],[7,0]]){
+   add(new THREE.DodecahedronGeometry(.78,0),crystalMat,x,.55,z,.62,1.8,.62).rotation.z=.12;
+   add(new THREE.DodecahedronGeometry(.42,0),crystalMat,x+.48,.38,z+.2,.5,1.3,.5);
+  }
+  // Broken masonry, grass tufts and ground debris.
+  for(let i=0;i<38;i++){const x=(Math.random()-.5)*19,z=(Math.random()-.5)*14; if(Math.abs(x)<7.9)continue;const rock=add(new THREE.DodecahedronGeometry(.18+Math.random()*.32,0),i%3?stoneMat:darkMat,x,-.02,z,1.2,.55,.8);rock.rotation.set(Math.random(),Math.random(),Math.random())}
+  const grassMat=new THREE.MeshStandardMaterial({color:0x4f8050,roughness:1});
+  for(let i=0;i<65;i++){const x=(Math.random()-.5)*19,z=(Math.random()-.5)*14;if(Math.abs(x)<8)continue;const blade=add(new THREE.ConeGeometry(.045,.42,4),grassMat,x,.08,z);blade.rotation.z=(Math.random()-.5)*.8}
+  const particleGeo=new THREE.BufferGeometry(),positions=new Float32Array(180*3);
+  for(let i=0;i<180;i++){positions[i*3]=(Math.random()-.5)*20;positions[i*3+1]=Math.random()*5;positions[i*3+2]=(Math.random()-.5)*16}
+  particleGeo.setAttribute("position",new THREE.BufferAttribute(positions,3));
+  const dust=new THREE.Points(particleGeo,new THREE.PointsMaterial({color:0xd9c49c,size:.055,transparent:true,opacity:.48,depthWrite:false}));scene.add(dust);embers.push(dust);
+  const resize=()=>{const w=Math.max(1,frame.clientWidth),h=Math.max(1,frame.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};const ro=new ResizeObserver(resize);ro.observe(frame);resize();
+  let cinematicUntil=0;
+  window.addEventListener("varethia:combat",e=>{const d=e.detail||{};if(["ultimate","element-combo","evolution"].includes(d.type)){cinematicUntil=performance.now()+1250;const pulse=new THREE.PointLight(0xffc77c,8,18);pulse.position.set(0,3,0);scene.add(pulse);setTimeout(()=>scene.remove(pulse),650)}});
+  const applyMood=()=>{const env=frame.dataset.environment||"verdant-wilds",moods={"verdant-wilds":[0x101b19,0x5eaf9d,0x4d8053],"ashen-wastes":[0x211312,0xff7648,0x9a4832],"frostfall-reach":[0x101a29,0x72c9f4,0x4c6d9d],"emberfall-caldera":[0x24100d,0xff6a31,0x9d3822]};const v=moods[env]||moods["verdant-wilds"];scene.fog.color.setHex(v[0]);fill.color.setHex(v[1]);floorMat.color.setHex(v[2]);crystalMat.emissive.setHex(v[1]);};
+  let lastEnv="";function frameLoop(){raf=requestAnimationFrame(frameLoop);const t=clock.getElapsedTime(),now=performance.now();if(lastEnv!==frame.dataset.environment){lastEnv=frame.dataset.environment;applyMood()}runes.forEach((r,i)=>{r.rotation.z=t*.18+(i%4)*.5;r.material.opacity=.35+Math.sin(t*2+i)*.22});dust.rotation.y=t*.012;const cinematic=now<cinematicUntil;const targetZ=cinematic?14.2:17,targetY=cinematic?8.8:11;camera.position.z=THREE.MathUtils.damp(camera.position.z,targetZ,cinematic?4:2,.016);camera.position.y=THREE.MathUtils.damp(camera.position.y,targetY,cinematic?4:2,.016);camera.position.x=THREE.MathUtils.damp(camera.position.x,cinematic?Math.sin(t*7)*.38:0,3,.016);camera.lookAt(0,0,0);renderer.render(scene,camera)}
+  frameLoop();window.addEventListener("beforeunload",()=>{cancelAnimationFrame(raf);ro.disconnect();renderer.dispose()},{once:true});
+ }catch(e){canvas.remove();console.warn("3D arena renderer unavailable; CSS battlefield remains active",e)}
+}
+
 function part(parent,geometry,mat,name,pos,scale=[1,1,1]){const m=new THREE.Mesh(geometry,mat);m.name=name;m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;parent.add(m);return m}
 function capsule(parent,name,r,len,mat,pos){return part(parent,new THREE.CapsuleGeometry(r,len,4,8),mat,name,pos)}
 function humanoid(species,element){
@@ -137,11 +197,12 @@ async function createView(host,options={}){
 function mount(host,options={}){if(!host||host.dataset.threeMounted)return;host.dataset.threeMounted="pending";pending.set(host,options);observer.observe(host)}
 function scan(root=document){const hosts=[];if(root.matches?.("[data-character-model]"))hosts.push(root);root.querySelectorAll?.("[data-character-model]").forEach(host=>hosts.push(host));hosts.forEach(host=>mount(host,{turn:host.classList.contains("card-avatar"),scale:host.classList.contains("unit-icon")?1.18:.9}))}
 function release(root){const hosts=[];if(root.matches?.("[data-character-model]"))hosts.push(root);root.querySelectorAll?.("[data-character-model]").forEach(h=>hosts.push(h));hosts.forEach(host=>{observer.unobserve(host);pending.delete(host);const view=views.get(host);if(view)view.dispose();views.delete(host);delete host._varethiaView})}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountArenaScene,{once:true});else mountArenaScene();
 const mutation=new MutationObserver(records=>records.forEach(r=>{r.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n)});r.removedNodes.forEach(n=>{if(n.nodeType===1)release(n)})}));mutation.observe(document.body,{childList:true,subtree:true});scan();
 document.addEventListener("pointerover",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(true)});
 document.addEventListener("pointerout",e=>{const card=e.target.closest?.("[data-card]");card?.querySelector("[data-character-model]")?._varethiaView?.hover(false)});
 document.addEventListener("click",e=>{const card=e.target.closest?.("[data-card]");if(card){document.querySelectorAll(".card-avatar").forEach(x=>x._varethiaView?.select(false));card.querySelector(".card-avatar")?._varethiaView?.select(true)}const hand=e.target.closest?.(".hand-card");if(hand){document.querySelectorAll(".hand-card [data-character-model]").forEach(x=>x._varethiaView?.select(false));hand.querySelector("[data-character-model]")?._varethiaView?.select(true)}});
-function impact(detail){const box=document.querySelector(".battlefield-frame");if(!box)return;const fx=document.createElement("span");fx.className="battle-impact-fx "+(detail.element||"")+(detail.type==="ultimate"?" ultimate":"")+(detail.combo==="firestorm"?" firestorm":"")+(detail.type==="evolution"?" evolution":"");fx.textContent=detail.combo==="firestorm"?"🔥":detail.type==="evolution"?"✧":detail.type==="ultimate"?"✹":detail.element==="Fire"?"✹":detail.element==="Ice"?"❄":detail.element==="Lightning"?"ϟ":"✦";box.appendChild(fx);if(detail.type==="ultimate"||detail.combo==="firestorm"){const damage=Number(box.dataset.terrainDamage||0)+1;box.dataset.terrainDamage=String(damage);box.classList.add("terrain-damaged");}if(detail.attackType==="ranged"){const from=findLiveModel(detail.attackerId),to=findLiveModel(detail.targetId);if(from&&to){const a=from.getBoundingClientRect(),b=to.getBoundingClientRect(),r=box.getBoundingClientRect(),x=a.left+a.width/2-r.left,y=a.top+a.height/2-r.top,dx=b.left+b.width/2-a.left-a.width/2,dy=b.top+b.height/2-a.top-a.height/2,line=document.createElement("i");line.className="battle-projectile";line.style.left=x+"px";line.style.top=y+"px";line.style.width=Math.hypot(dx,dy)+"px";line.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";box.appendChild(line);setTimeout(()=>line.remove(),420)}}box.classList.remove("impact-shake");void box.offsetWidth;box.classList.add("impact-shake");setTimeout(()=>{fx.remove();box.classList.remove("impact-shake")},700)}
+function impact(detail){const box=document.querySelector(".battlefield-frame");if(!box)return;const fx=document.createElement("span");fx.className="battle-impact-fx "+(detail.element||"")+(detail.type==="ultimate"?" ultimate":"")+(detail.combo==="firestorm"?" firestorm":"")+(detail.type==="evolution"?" evolution":"");fx.textContent=detail.combo==="firestorm"?"✧":detail.type==="evolution"?"✧":detail.type==="ultimate"?"✹":detail.element==="Fire"?"✹":detail.element==="Ice"?"❖":detail.element==="Lightning"?"ϟ":"✦";box.appendChild(fx);if(detail.type==="ultimate"||detail.combo==="firestorm"){const damage=Number(box.dataset.terrainDamage||0)+1;box.dataset.terrainDamage=String(damage);box.classList.add("terrain-damaged");}if(detail.attackType==="ranged"){const from=findLiveModel(detail.attackerId),to=findLiveModel(detail.targetId);if(from&&to){const a=from.getBoundingClientRect(),b=to.getBoundingClientRect(),r=box.getBoundingClientRect(),x=a.left+a.width/2-r.left,y=a.top+a.height/2-r.top,dx=b.left+b.width/2-a.left-a.width/2,dy=b.top+b.height/2-a.top-a.height/2,line=document.createElement("i");line.className="battle-projectile";line.style.left=x+"px";line.style.top=y+"px";line.style.width=Math.hypot(dx,dy)+"px";line.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";box.appendChild(line);setTimeout(()=>line.remove(),420)}}box.classList.remove("impact-shake");void box.offsetWidth;box.classList.add("impact-shake");setTimeout(()=>{fx.remove();box.classList.remove("impact-shake")},700)}
 let audioContext=null;
 function playSound(kind){try{const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;if(!audioContext)audioContext=new Ctx();if(audioContext.state==="suspended")audioContext.resume();const now=audioContext.currentTime,osc=audioContext.createOscillator(),gain=audioContext.createGain();const config={swing:[190,105,.12,"sawtooth"],impact:[95,42,.18,"triangle"],death:[75,28,.42,"sine"],ultimate:[420,70,.55,"sawtooth"]}[kind]||[160,80,.1,"sine"];osc.type=config[3];osc.frequency.setValueAtTime(config[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(20,config[1]),now+config[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==="ultimate"?.075:.035,now+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+config[2]);osc.connect(gain);gain.connect(audioContext.destination);osc.start(now);osc.stop(now+config[2]+.02)}catch(e){console.warn("Varethia sound effect unavailable",e)}}
 function findLiveModel(id){return [...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.closest(".lane-unit")&&n.dataset.threeVisible==="true")||[...document.querySelectorAll('[data-character-model="'+CSS.escape(String(id||""))+'"]')].find(n=>n.dataset.threeVisible==="true")}
