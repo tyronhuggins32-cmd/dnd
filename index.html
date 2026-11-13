@@ -140,7 +140,33 @@
 <section class="final-cta"><div class="eyebrow">THE WORLD IS WAITING</div><h2>YOUR STORY HAS<br><em>NOT YET BEGUN.</em></h2><p>Create a character when you're ready. Varethia will not begin until you choose to enter it.</p><button class="primary-btn" data-open-character>CREATE YOUR CHARACTER <b>→</b></button></section>
 </main>
 <footer class="site-footer"><a class="identity" href="#home"><span class="sigil">V</span><span><small>THE CHRONICLES OF</small><b>VARETHIA</b></span></a><span>NO CHOSEN ONE. NO GUARANTEED MERCY.</span><span>2.5D WORLD · 3D ARCHITECTURE</span><a href="WORLD_BIBLE.md">WORLD BIBLE ↗</a></footer>
-<div class="modal-backdrop" id="characterModal" aria-hidden="true"><section class="character-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="closeModal" aria-label="Close">×</button><div class="eyebrow">WRITE YOUR OWN BEGINNING</div><h2 id="modalTitle">CREATE CHARACTER</h2><p>Set up a character draft. This will not start the campaign or advance world time.</p><form id="characterForm" novalidate><label>CHARACTER NAME<input name="name" maxlength="32" required placeholder="Enter a name"></label><label>AGE<input name="age" type="number" min="1" max="1200" placeholder="Age"></label><label>BACKGROUND<select name="origin"><option value="">Choose a background</option><option>Rural commoner</option><option>City-born artisan</option><option>Noble household</option><option>Wandering family</option><option>Raised by a community</option><option>Undisclosed / custom</option></select></label><label>NATURAL ELEMENT<select name="element"><option value="">Undiscovered / decide later</option><option>Fire</option><option>Water</option><option>Earth</option><option>Wind</option><option>Ice</option><option>Lightning</option><option>Custom element</option></select></label><label>CURSE STATUS<select name="curse"><option>Unknown</option><option>No known curse</option><option>Known curse</option><option>Custom / undisclosed</option></select></label><button class="primary-btn" id="saveCharacterDraft" type="submit">SAVE CHARACTER DRAFT <b>→</b></button></form><div class="form-message" id="formMessage" role="status"></div></section></div>
+<div class="modal-backdrop" id="characterModal" aria-hidden="true"><section class="character-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="closeModal" aria-label="Close">×</button><div class="eyebrow">WRITE YOUR OWN BEGINNING</div><h2 id="modalTitle">CREATE CHARACTER</h2><p>Set up a character draft. This will not start the campaign or advance world time.</p><form id="characterForm" novalidate><label>CHARACTER NAME<input name="name" maxlength="32" required placeholder="Enter a name"></label><label>AGE<input name="age" type="number" min="1" max="1200" placeholder="Age"></label><label>BACKGROUND<select name="origin"><option value="">Choose a background</option><option>Rural commoner</option><option>City-born artisan</option><option>Noble household</option><option>Wandering family</option><option>Raised by a community</option><option>Undisclosed / custom</option></select></label><label>NATURAL ELEMENT<select name="element"><option value="">Undiscovered / decide later</option><option>Fire</option><option>Water</option><option>Earth</option><option>Wind</option><option>Ice</option><option>Lightning</option><option>Custom element</option></select></label><label>CURSE STATUS<select name="curse"><option>Unknown</option><option>No known curse</option><option>Known curse</option><option>Custom / undisclosed</option></select></label><button class="primary-btn" id="saveCharacterDraft" type="submit">SAVE CHARACTER DRAFT <b>→</b></button></form><div class="form-message" id="formMessage" role="status"></div>
+ <section class="account-panel">
+  <div class="account-divider"><span>ONLINE ACCOUNT</span></div>
+  <div id="accountAuth">
+   <p class="account-intro">Create an account or sign in to verify your player and save progress online.</p>
+   <label>USERNAME <input id="accountUsername" maxlength="20" autocomplete="username" placeholder="Choose a player name"></label>
+   <label>EMAIL <input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
+   <label>PASSWORD <input id="accountPassword" type="password" minlength="8" autocomplete="current-password" placeholder="At least 8 characters"></label>
+   <div class="account-actions"><button class="primary-btn" id="accountRegister" type="button">CREATE ACCOUNT</button><button class="secondary-btn" id="accountLogin" type="button">SIGN IN</button></div>
+   <button class="account-text-btn" id="accountReset" type="button">FORGOT PASSWORD?</button>
+  </div>
+  <div id="accountSignedIn" hidden>
+   <b class="account-verified">✓ ACCOUNT VERIFIED</b>
+   <p class="account-player">PLAYER <strong id="accountPlayerName"></strong><br>PLAYER ID <code id="accountPlayerId"></code></p>
+   <div class="account-actions"><button class="secondary-btn" id="accountSaveNow" type="button">SAVE TO CLOUD</button><button class="secondary-btn" id="accountLogout" type="button">SIGN OUT</button></div>
+   <div class="account-social">
+    <h3>ONLINE PLAYERS</h3>
+    <input id="playerSearch" placeholder="Search username or player ID">
+    <button class="secondary-btn" id="playerSearchButton" type="button">SEARCH PLAYERS</button>
+    <div id="playerSearchResults"></div>
+    <h3>FRIENDS</h3><div id="friendList">No friends loaded.</div>
+    <h3>LEADERBOARD</h3><button class="secondary-btn" id="leaderboardButton" type="button">VIEW LEADERBOARD</button><div id="leaderboardList"></div>
+    <h3>MATCHMAKING</h3><select id="queueMode"><option value="arena">Arena Clash</option><option value="dungeon">Dungeon Expedition</option><option value="survival">Survival</option></select><button class="secondary-btn" id="queueButton" type="button">JOIN MATCHMAKING QUEUE</button><button class="account-text-btn" id="leaveQueue" type="button">LEAVE QUEUE</button>
+   </div>
+  </div>
+  <div class="account-status" id="accountStatus" role="status">Connecting account service…</div>
+ </section></section></div>
 <div class="game-hub" id="gameHub" aria-hidden="true"><div class="hub-shell"><div class="hub-top"><div class="identity"><span class="sigil">V</span><span><small>THE CHRONICLES OF</small><b>VARETHIA</b></span></div><div class="hub-player"><span id="hubCharacterName">CHARACTER</span><b>◈ <span id="coinBalance">500</span> COINS</b></div><button class="hub-exit" id="hubExit">BACK TO WORLD</button></div><div class="hub-progress"><span id="hubStep">01 / MODE SELECTION</span><span id="hubDraftName">DRAFT SAVED</span></div><section class="hub-view active mode-select-screen" id="modeView">
  <div class="mode-select-frame">
   <div class="mode-select-heading"><span class="mode-trophy">♜</span><div><small>VARETHIA / CHOOSE YOUR PATH</small><h2>SELECT A GAME MODE</h2></div><span class="mode-settings-mark">⚙</span></div>
@@ -176,7 +202,9 @@
  <div id="battleStatus" class="battle-status" role="status"></div>
 </section></div></div><div class="toast" id="toast" role="status"></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script src="account-config.js"></script>
 <script src="app.js"></script>
+<script type="module" src="account.js"></script>
 <script type="module" src="animation.js"></script>
 <script type="module" src="title-scene.js"></script>
 </body></html>
