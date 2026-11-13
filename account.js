@@ -27,6 +27,7 @@ async function handleSession(){
   $("#accountPlayerId").textContent=profile?.player_id||"Assigning player ID…";
   status("Account verified. Loading cloud save…");
   await loadCloudSave();
+  await loadFriends();
  }else{profile=null;if(auth)auth.hidden=false;if(signed)signed.hidden=true;status(configured()?"Create an account or sign in to enable cloud saves.":"Backend connection not configured yet.",!configured())}
 }
 async function register(){
@@ -90,7 +91,7 @@ async function loadFriends(){
  (data||[]).forEach(f=>{
   const other=f.requester_id===session.user.id?f.addressee_id:f.requester_id,p=(profiles||[]).find(x=>x.id===other);
   const row=document.createElement("div");row.className="account-player-row";
-  const name=document.createElement("span");name.textContent=(p?.username||"Player")+" · "+f.status;row.append(name);
+  const name=document.createElement("span");name.textContent=(p?.username||"Player")+" · "+f.status;row.append(name);if(f.status!=="blocked"){const block=document.createElement("button");block.className="account-text-btn";block.textContent="BLOCK";block.addEventListener("click",async()=>{const r=await client.from("player_friendships").update({status:"blocked"}).eq("id",f.id);status(r.error?.message||"Player blocked.");loadFriends()});row.append(block)}
   if(f.addressee_id===session.user.id&&f.status==="pending"){const accept=document.createElement("button");accept.className="secondary-btn";accept.textContent="ACCEPT";accept.addEventListener("click",async()=>{const r=await client.from("player_friendships").update({status:"accepted"}).eq("id",f.id);status(r.error?.message||"Friend request accepted.");loadFriends()});row.append(accept)}
   box.append(row);
  });
@@ -103,8 +104,9 @@ async function loadLeaderboard(){
 }
 async function joinQueue(){
  const mode=$("#queueMode").value;
- const {error}=await client.from("matchmaking_queue").upsert({user_id:session.user.id,mode,rating:1000,queued_at:new Date().toISOString()},{onConflict:"user_id"});
- status(error?error.message:"You’re in the "+mode+" matchmaking queue. Waiting for an opponent.");
+ const {data,error}=await client.rpc("join_varethia_matchmaking",{p_mode:mode});
+ if(error){status(error.message,true);return}
+ status(data?.status==="matched"?"Opponent found. Match ID: "+data.match_id:"You are in the "+mode+" matchmaking queue. Waiting for an opponent.");
 }
 async function leaveQueue(){const {error}=await client.from("matchmaking_queue").delete().eq("user_id",session.user.id);status(error?error.message:"You left the matchmaking queue.")}
 window.VarethiaCloud={init,register,login,resetPassword,logout,save:saveCloudNow,queueSave,searchPlayers,loadFriends,loadLeaderboard,joinQueue,leaveQueue,get user(){return session?.user||null},get profile(){return profile},get ready(){return !!client}};
