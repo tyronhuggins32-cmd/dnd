@@ -32,6 +32,15 @@ create table if not exists public.player_reports (
   reason text not null check(length(reason) between 5 and 1000),
   created_at timestamptz not null default now()
 );
+create table if not exists public.player_matches (
+  id uuid primary key default gen_random_uuid(),
+  mode text not null check(mode in ('arena','dungeon','survival')),
+  player_one uuid not null references auth.users(id) on delete cascade,
+  player_two uuid not null references auth.users(id) on delete cascade,
+  status text not null default 'matched' check(status in ('matched','completed','cancelled')),
+  created_at timestamptz not null default now(),
+  check(player_one <> player_two)
+);
 create table if not exists public.matchmaking_queue (
   user_id uuid primary key references auth.users(id) on delete cascade,
   mode text not null check(mode in ('arena','dungeon','survival')),
@@ -64,7 +73,7 @@ alter table public.player_profiles enable row level security;
 alter table public.player_saves enable row level security;
 alter table public.player_friendships enable row level security;
 alter table public.player_reports enable row level security;
-alter table public.matchmaking_queue enable row level security;
+alter table public.matchmaking_queue enable row level security;\nalter table public.player_matches enable row level security;
 
 drop policy if exists "Profiles are publicly searchable" on public.player_profiles;
 create policy "Profiles are publicly searchable" on public.player_profiles for select to authenticated using(true);
@@ -86,6 +95,32 @@ drop policy if exists "Players report others" on public.player_reports;
 create policy "Players report others" on public.player_reports for insert to authenticated with check(auth.uid()=reporter_id and reporter_id<>reported_player_id);
 drop policy if exists "Players manage own matchmaking entry" on public.matchmaking_queue;
 create policy "Players manage own matchmaking entry" on public.matchmaking_queue for all to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
+drop policy if exists "Match participants can view" on public.player_matches;
+create policy "Match participants can view" on public.player_matches for select to authenticated using(auth.uid() in (player_one,player_two));
+drop policy if exists "Either friend can update relationship" on public.player_friendships;
+create policy "Either friend can update relationship" on public.player_friendships for update to authenticated using(auth.uid() in (requester_id,addressee_id)) with check(auth.uid() in (requester_id,addressee_id) and status in ('accepted','blocked'));
+
+create or replace function public.join_varethia_matchmaking(p_mode text)
+returns jsonb language plpgsql security definer set search_path=public
+as $
+declare me uuid := auth.uid(); opponent uuid; match_id uuid;
+begin
+ if me is null then raise exception 'Authentication required'; end if;
+ if p_mode not in ('arena','dungeon','survival') then raise exception 'Invalid mode'; end if;
+ select user_id into opponent from public.matchmaking_queue
+  where mode=p_mode and user_id<>me order by queued_at
+  for update skip locked limit 1;
+ if opponent is not null then
+  delete from public.matchmaking_queue where user_id in (me,opponent);
+  insert into public.player_matches(mode,player_one,player_two) values(p_mode,opponent,me) returning id into match_id;
+  return jsonb_build_object('status','matched','match_id',match_id,'mode',p_mode);
+ end if;
+ insert into public.matchmaking_queue(user_id,mode,rating,queued_at) values(me,p_mode,1000,now())
+ on conflict(user_id) do update set mode=excluded.mode,queued_at=excluded.queued_at;
+ return jsonb_build_object('status','queued','mode',p_mode);
+end; $;
+revoke all on function public.join_varethia_matchmaking(text) from public;
+grant execute on function public.join_varethia_matchmaking(text) to authenticated;
 
 create or replace view public.player_leaderboard
 with (security_invoker=true) as
