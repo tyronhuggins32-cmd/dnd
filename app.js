@@ -50,8 +50,34 @@ form.addEventListener("submit",e=>{e.preventDefault();saveCharacterDraft()});
 $("#saveCharacterDraft").addEventListener("click",e=>{e.preventDefault();saveCharacterDraft()});
 try{const previous=readStore("varethia.characterDraft",null);if(previous&&previous.name){draft=previous;$("#hubCharacterName").textContent=previous.name.toUpperCase();$("#hubDraftName").textContent="DRAFT: "+previous.name;for(const [key,value] of Object.entries(previous)){if(form.elements[key])form.elements[key].value=value}}}catch{}
 $("#mobileToggle").addEventListener("click",()=>{const o=nav.classList.toggle("open");$("#mobileToggle").setAttribute("aria-expanded",String(o))});nav.querySelectorAll("a").forEach(x=>x.addEventListener("click",()=>nav.classList.remove("open")));
-function showHub(id,step){hub.classList.add("open");hub.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";document.querySelectorAll(".hub-view").forEach(x=>x.classList.toggle("active",x.id===id));$("#hubStep").textContent=step||id;updateCoins();if(id==="teamView")renderTeam();if(id==="collectionView")renderCollection();if(id==="battleView")renderBattle();window.scrollTo(0,0)}
-function hideHub(){hub.classList.remove("open");hub.setAttribute("aria-hidden","true");document.body.style.overflow="";if(window.VarethiaTitleScene){window.VarethiaTitleScene.transitionIn(()=>{document.body.classList.add("title-menu-open")})}else restoreTitleMenu()}$("#hubExit").addEventListener("click",()=>{if($("#worldMapView")?.classList.contains("active"))hideHub();else showHub("worldMapView","WORLD MAP / CENTRAL HUB")});
+let mapAudioContext=null,mapAudioNodes=[],mapMusicTimer=null,mapMusicEnabled=false;
+function stopMapMusic(){
+ mapMusicEnabled=false;
+ if(mapMusicTimer){clearInterval(mapMusicTimer);mapMusicTimer=null;}
+ const toggle=$("#mapAudioToggle");if(toggle){toggle.setAttribute("aria-pressed","false");toggle.querySelector(".audio-label").textContent="MUSIC: OFF";}
+ if(mapAudioContext){const ctx=mapAudioContext;mapAudioNodes.forEach(node=>{try{if(node.gain)node.gain.setTargetAtTime(0,ctx.currentTime,.08);else node.stop?.();}catch(e){}});mapAudioNodes=[];mapAudioContext=null;setTimeout(()=>{try{ctx.close();}catch(e){}},250);}
+}
+function startMapMusic(){
+ if(mapMusicEnabled)return;
+ const AudioCtx=window.AudioContext||window.webkitAudioContext;
+ if(!AudioCtx){const t=$("#mapAudioToggle");t.querySelector(".audio-label").textContent="AUDIO UNAVAILABLE";return;}
+ try{
+  const ctx=new AudioCtx();mapAudioContext=ctx;ctx.resume();mapMusicEnabled=true;
+  const master=ctx.createGain();master.gain.value=.0001;master.connect(ctx.destination);master.gain.setTargetAtTime(.16,ctx.currentTime,.8);mapAudioNodes.push(master);
+  const filter=ctx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=1250;filter.connect(master);
+  const pad=[146.83,174.61,220,293.66];
+  pad.forEach((hz,index)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=index===1?"sine":"triangle";osc.frequency.value=hz;gain.gain.value=index===0?.12:.055;osc.connect(gain);gain.connect(filter);osc.start();mapAudioNodes.push(osc,gain);});
+  const notes=[293.66,349.23,440,392,329.63,261.63,349.23,293.66,220,261.63,329.63,392];
+  let step=0;
+  const playNote=()=>{if(!mapAudioEnabled())return;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.value=notes[step%notes.length];gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.045,ctx.currentTime+.25);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+2.4);osc.connect(gain);gain.connect(master);osc.start();osc.stop(ctx.currentTime+2.5);step++;};
+  function mapAudioEnabled(){return mapMusicEnabled&&mapAudioContext===ctx;}
+  playNote();mapMusicTimer=setInterval(playNote,2600);
+  const toggle=$("#mapAudioToggle");toggle.setAttribute("aria-pressed","true");toggle.querySelector(".audio-label").textContent="MUSIC: ON";
+ }catch(error){stopMapMusic();const t=$("#mapAudioToggle");t.querySelector(".audio-label").textContent="AUDIO UNAVAILABLE";}
+}
+$("#mapAudioToggle").addEventListener("click",()=>mapMusicEnabled?stopMapMusic():startMapMusic());
+function showHub(id,step){if(id!=="worldMapView")stopMapMusic();hub.classList.add("open");hub.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";document.querySelectorAll(".hub-view").forEach(x=>x.classList.toggle("active",x.id===id));$("#hubStep").textContent=step||id;updateCoins();if(id==="teamView")renderTeam();if(id==="collectionView")renderCollection();if(id==="battleView")renderBattle();window.scrollTo(0,0)}
+function hideHub(){stopMapMusic();hub.classList.remove("open");hub.setAttribute("aria-hidden","true");document.body.style.overflow="";if(window.VarethiaTitleScene){window.VarethiaTitleScene.transitionIn(()=>{document.body.classList.add("title-menu-open")})}else restoreTitleMenu()}$("#hubExit").addEventListener("click",()=>{if($("#worldMapView")?.classList.contains("active"))hideHub();else showHub("worldMapView","WORLD MAP / CENTRAL HUB")});
 document.querySelectorAll("[data-back]").forEach(x=>x.addEventListener("click",()=>showHub(x.dataset.back)));
 function openWorldLocation(place){
  const views={vault:["vaultView","THE CARD VAULT"],quests:["questView","QUEST BOARD"],training:["trainingView","TRAINING GROUNDS"],dungeons:["setupView","DUNGEON GATES / EXPEDITION"],ranked:["rankedView","RANKED ARENA"]};
