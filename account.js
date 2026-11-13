@@ -53,7 +53,7 @@ async function loadCloudSave(){
  const {data,error}=await client.from("player_saves").select("save_data,revision,updated_at").eq("user_id",session.user.id).maybeSingle();
  if(error){status("Cloud save could not load: "+error.message,true);return}
  if(data?.save_data && Object.keys(data.save_data).length){
-  window.dispatchEvent(new CustomEvent("varethia:cloud-loaded",{detail:data.save_data}));
+  if(window.VarethiaApplyCloudData)window.VarethiaApplyCloudData(data.save_data);
   status("Cloud progress loaded. Your account is ready.");
  }else{await saveCloudNow();status("Account verified. First cloud save created.")}
 }
@@ -65,14 +65,59 @@ async function saveCloudNow(){
  else status("Cloud save synced · "+new Date().toLocaleTimeString());
 }
 function queueSave(){if(!session)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveCloudNow,900)}
-window.VarethiaCloud={init,register,login,resetPassword,logout,save:saveCloudNow,queueSave,get user(){return session?.user||null},get profile(){return profile},get ready(){return !!client}};
+async function searchPlayers(){
+ const q=$("#playerSearch").value.trim();if(q.length<2){status("Enter at least 2 characters to search.",true);return}
+ const {data,error}=await client.from("player_profiles").select("id,player_id,username").or("username.ilike.%"+q+"%,player_id.ilike.%"+q+"%").limit(12);
+ if(error){status(error.message,true);return}
+ const box=$("#playerSearchResults");box.replaceChildren();
+ (data||[]).filter(p=>p.id!==session.user.id).forEach(p=>{
+  const row=document.createElement("div");row.className="account-player-row";
+  const label=document.createElement("span");label.textContent=p.username+" · "+p.player_id;
+  const add=document.createElement("button");add.className="secondary-btn";add.textContent="ADD FRIEND";
+  add.addEventListener("click",async()=>{const r=await client.from("player_friendships").insert({requester_id:session.user.id,addressee_id:p.id});status(r.error?r.error.message:"Friend request sent.");});
+  const report=document.createElement("button");report.className="account-text-btn";report.textContent="REPORT";
+  report.addEventListener("click",async()=>{const reason=prompt("Why are you reporting this player?");if(!reason)return;const r=await client.from("player_reports").insert({reporter_id:session.user.id,reported_player_id:p.id,reason});status(r.error?r.error.message:"Report submitted.");});
+  row.append(label,add,report);box.append(row);
+ });
+ if(!box.children.length)box.textContent="No players found.";
+}
+async function loadFriends(){
+ const {data,error}=await client.from("player_friendships").select("id,requester_id,addressee_id,status").or("requester_id.eq."+session.user.id+",addressee_id.eq."+session.user.id).limit(50);
+ if(error){$("#friendList").textContent=error.message;return}
+ const ids=[...new Set((data||[]).map(x=>x.requester_id===session.user.id?x.addressee_id:x.requester_id).filter(x=>x!==session.user.id))];
+ const {data:profiles}=ids.length?await client.from("player_profiles").select("id,username,player_id").in("id",ids):{data:[]};
+ const box=$("#friendList");box.replaceChildren();
+ (data||[]).forEach(f=>{
+  const other=f.requester_id===session.user.id?f.addressee_id:f.requester_id,p=(profiles||[]).find(x=>x.id===other);
+  const row=document.createElement("div");row.className="account-player-row";
+  const name=document.createElement("span");name.textContent=(p?.username||"Player")+" · "+f.status;row.append(name);
+  if(f.addressee_id===session.user.id&&f.status==="pending"){const accept=document.createElement("button");accept.className="secondary-btn";accept.textContent="ACCEPT";accept.addEventListener("click",async()=>{const r=await client.from("player_friendships").update({status:"accepted"}).eq("id",f.id);status(r.error?.message||"Friend request accepted.");loadFriends()});row.append(accept)}
+  box.append(row);
+ });
+ if(!box.children.length)box.textContent="No friend requests or friends yet.";
+}
+async function loadLeaderboard(){
+ const {data,error}=await client.from("player_leaderboard").select("username,player_id,wins,rating").order("rating",{ascending:false}).limit(20);
+ const box=$("#leaderboardList");box.replaceChildren();if(error){box.textContent=error.message;return}
+ (data||[]).forEach((p,i)=>{const row=document.createElement("div");row.className="account-player-row";row.textContent=(i+1)+". "+p.username+" · "+p.rating+" rating · "+p.wins+" wins";box.append(row)});
+}
+async function joinQueue(){
+ const mode=$("#queueMode").value;
+ const {error}=await client.from("matchmaking_queue").upsert({user_id:session.user.id,mode,rating:1000,queued_at:new Date().toISOString()},{onConflict:"user_id"});
+ status(error?error.message:"You’re in the "+mode+" matchmaking queue. Waiting for an opponent.");
+}
+async function leaveQueue(){const {error}=await client.from("matchmaking_queue").delete().eq("user_id",session.user.id);status(error?error.message:"You left the matchmaking queue.")}
+window.VarethiaCloud={init,register,login,resetPassword,logout,save:saveCloudNow,queueSave,searchPlayers,loadFriends,loadLeaderboard,joinQueue,leaveQueue,get user(){return session?.user||null},get profile(){return profile},get ready(){return !!client}};
 document.addEventListener("DOMContentLoaded",()=>{
  $("#accountRegister")?.addEventListener("click",()=>register().catch(e=>status(e.message,true)));
  $("#accountLogin")?.addEventListener("click",()=>login().catch(e=>status(e.message,true)));
  $("#accountReset")?.addEventListener("click",()=>resetPassword().catch(e=>status(e.message,true)));
  $("#accountLogout")?.addEventListener("click",()=>logout().catch(e=>status(e.message,true)));
  $("#accountSaveNow")?.addEventListener("click",()=>saveCloudNow());
+ $("#playerSearchButton")?.addEventListener("click",()=>searchPlayers().catch(e=>status(e.message,true)));
+ $("#leaderboardButton")?.addEventListener("click",()=>loadLeaderboard().catch(e=>status(e.message,true)));
+ $("#queueButton")?.addEventListener("click",()=>joinQueue().catch(e=>status(e.message,true)));
+ $("#leaveQueue")?.addEventListener("click",()=>leaveQueue().catch(e=>status(e.message,true)));
  window.addEventListener("varethia:progress-changed",queueSave);
- window.addEventListener("varethia:cloud-loaded",e=>{try{localStorage.setItem("varethia.cloudRestorePending",JSON.stringify(e.detail));location.reload()}catch{status("Cloud data loaded but could not be applied to this browser.",true)}});
  init().catch(e=>status("Account service error: "+e.message,true));
 });
