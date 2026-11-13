@@ -490,3 +490,8 @@ body.menu-no-glow .title-menu-options button{text-shadow:none}
 .card-art-frame.art-failed:after{content:attr(data-fallback-label);position:absolute;z-index:4;left:0;right:0;bottom:7px;text-align:center;color:#e9d8fa;font:8px Cinzel;letter-spacing:.12em;text-shadow:0 2px 5px #000}
 .card-art-frame.art-ready .art-fallback{display:none}
 .card-art-frame.art-ready .card-avatar{visibility:visible}
+
+/* Fast collection reveal: no long artwork loading overlay */
+.card-art-frame .art-loading{display:none!important}
+.character-card.art-pending{opacity:1;filter:none}
+.character-card.art-pending .card-art-frame{background:radial-gradient(ellipse at 50% 65%,#6e4b87,#252036 54%,#11111a)}
