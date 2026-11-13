@@ -79,10 +79,16 @@ function mountArenaScene(){
 
 function part(parent,geometry,mat,name,pos,scale=[1,1,1]){const m=new THREE.Mesh(geometry,mat);m.name=name;m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;parent.add(m);return m}
 function capsule(parent,name,r,len,mat,pos){return part(parent,new THREE.CapsuleGeometry(r,len,4,8),mat,name,pos)}
-function humanoid(species,element){
- const root=new THREE.Group();root.name="VarethiaStylizedHeroRig";
+function seededStyle(id){
+ let n=2166136261;for(const ch of String(id??"0")){n^=ch.charCodeAt(0);n=Math.imul(n,16777619)}
+ const rand=()=>{n+=0x6D2B79F5;let t=n;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296};
+ const paletteColors=[0x6f3c52,0x365d70,0x6d653b,0x513c76,0x3d6a50,0x873f35,0x53606c,0x7a5637,0x3c526e,0x744d67,0x4b6449,0x6b4b31];
+ return {rand,armor:paletteColors[Math.floor(rand()*paletteColors.length)],cloth:paletteColors[Math.floor(rand()*paletteColors.length)],trim:[0xc89b50,0xb9c6d4,0x9c6aaf,0x6fa6a0,0xc77b56][Math.floor(rand()*5)],skin:[0xe8bd9b,0xc78f72,0x98735f,0xaaa19b,0xe0c9ad,0x78a45d][Math.floor(rand()*6)],iris:[0x3e9b9c,0x9e443c,0x8563c4,0xd4a32c,0x4eaa68,0xd9d9e5][Math.floor(rand()*6)],ornament:Math.floor(rand()*5),horns:rand()>.48,crest:rand()>.35,shoulders:rand()>.45,weapon:Math.floor(rand()*4),cape:rand()>.25};
+}
+function humanoid(species,element,characterId){
+ const style=seededStyle(characterId),root=new THREE.Group();root.name="VarethiaStylizedHeroRig";
  const toon=(color,emissive=0)=>new THREE.MeshToonMaterial({color,emissive,emissiveIntensity:emissive?0.45:0});
- const armor=toon(0x373044),cloth=toon(0x65404b),skin=toon(species==="Undead"?0xaaa19b:species==="Orc"?0x78a45d:species==="Elf"?0xe4bd9b:0xe8bd9b),gold=toon(0xd6a64f),accent=toon(palette[element]||0x98745b,palette[element]||0),dark=toon(0x211d2a),eyeWhite=toon(0xfff0d9),iris=toon(0x3e9b9c),pupil=toon(0x211c27);
+ const armor=toon(style.armor),cloth=toon(style.cloth),skin=toon(species==="Undead"?0xaaa19b:species==="Orc"?0x78a45d:species==="Elf"?0xe4bd9b:style.skin),gold=toon(style.trim),accent=toon(palette[element]||0x98745b,palette[element]||0),dark=toon(0x211d2a),eyeWhite=toon(0xfff0d9),iris=toon(style.iris),pupil=toon(0x211c27);
  const torso=new THREE.Group();torso.name="torso";torso.position.y=1.02;root.add(torso);
  part(torso,new THREE.SphereGeometry(.34,20,16),armor,"chest",[0,0,0],[1.08,1.22,.78]);
  part(torso,new THREE.SphereGeometry(.255,18,14),cloth,"tunic",[0,-.16,.075],[1.04,1.12,.78]);
@@ -90,7 +96,7 @@ function humanoid(species,element){
  part(torso,new THREE.SphereGeometry(.12,14,10),accent,"element-gem",[0,.19,.31]);
  part(torso,new THREE.TorusGeometry(.27,.045,8,18),gold,"belt",[0,-.31,.015],[1,1,.7]);
  const cape=new THREE.Group();cape.name="cape";cape.position.set(0,.22,-.2);torso.add(cape);
- part(cape,new THREE.ConeGeometry(.36,.78,5),cloth,"hero-cape",[0,-.43,-.02],[1,.9,.22]).rotation.x=-Math.PI;
+ if(style.cape)part(cape,new THREE.ConeGeometry(.36,.78,5),cloth,"hero-cape",[0,-.43,-.02],[1,.9,.22]).rotation.x=-Math.PI;
  const head=new THREE.Group();head.name="head";head.position.set(0,.48,.02);torso.add(head);
  part(head,new THREE.SphereGeometry(.32,24,20),skin,"face",[0,0,.035],[1.02,1.08,.88]);
  part(head,new THREE.SphereGeometry(.12,14,10),skin,"earL",[-.31,-.015,0],[.55,.8,.45]);part(head,new THREE.SphereGeometry(.12,14,10),skin,"earR",[.31,-.015,0],[.55,.8,.45]);
@@ -105,13 +111,13 @@ function humanoid(species,element){
  const helm=new THREE.Group();helm.name="helm";helm.position.y=.24;head.add(helm);
  part(helm,new THREE.SphereGeometry(.335,20,14,0,Math.PI*2,0,Math.PI*.56),gold,"helmet-crown",[0,.02,-.005],[1.08,.82,.98]);
  part(helm,new THREE.BoxGeometry(.47,.075,.055),accent,"helmet-band",[0,-.095,.285]);
- part(helm,new THREE.ConeGeometry(.09,.24,5),accent,"helmet-crest",[0,.31,-.005]);
- if(species==="Demon"||species==="Orc"){for(const side of [-1,1])part(helm,new THREE.ConeGeometry(.075,.28,6),species==="Demon"?dark:gold,"horn",[side*.25,.18,-.02],[1,1.25,1]).rotation.z=-side*.5}
+ if(style.crest)part(helm,new THREE.ConeGeometry(.09,.24,5),accent,"helmet-crest",[0,.31,-.005]);
+ if((species==="Demon"||species==="Orc")||style.horns){for(const side of [-1,1])if(style.horns||species==="Demon"||species==="Orc")part(helm,new THREE.ConeGeometry(.055+style.ornament*.008,.2+style.ornament*.025,6),species==="Demon"?dark:gold,"horn",[side*.25,.18,-.02],[1,1.25,1]).rotation.z=-side*.5}
  if(species==="Elf")for(const side of [-1,1])part(head,new THREE.ConeGeometry(.07,.3,5),skin,"elf-ear",[side*.36,.02,0],[.7,1.4,.6]).rotation.z=-side*.9;
  const armL=new THREE.Group();armL.name="armL";armL.position.set(-.37,.12,0);torso.add(armL);
  const armR=new THREE.Group();armR.name="armR";armR.position.set(.37,.12,0);torso.add(armR);
  for(const [arm,side] of [[armL,-1],[armR,1]]){
-  part(arm,new THREE.SphereGeometry(.16,16,12),gold,"shoulder-pad",[side*.015,-.015,0],[1.2,.9,1]);
+  if(style.shoulders)part(arm,new THREE.SphereGeometry(.16,16,12),gold,"shoulder-pad",[side*.015,-.015,0],[1.2,.9,1]);
   capsule(arm,"upperArm",.105,.23,skin,[0,-.18,.015]);
   capsule(arm,"foreArm",.105,.22,armor,[0,-.43,.035]);
   part(arm,new THREE.SphereGeometry(.12,14,10),gold,"gauntlet",[0,-.57,.055]);
@@ -136,8 +142,8 @@ function humanoid(species,element){
  }
  root.userData.rig={torso,head,armL,armR,legL,legR,weapon,wings,cape};return root;
 }
-function beast(species,element){
- const root=new THREE.Group();root.name="VarethiaCreatureRig";const hide=material(0x51433d),accent=material(palette[element]||0x98745b,.3,.4,palette[element]||0),eyes=new THREE.MeshStandardMaterial({color:0xffd68a,emissive:0xff9c2e,emissiveIntensity:1.8});
+function beast(species,element,characterId){
+ const style=seededStyle(characterId),root=new THREE.Group();root.name="VarethiaCreatureRig";const hide=material(style.armor),accent=material(palette[element]||style.trim,.3,.4,palette[element]||0),eyes=new THREE.MeshStandardMaterial({color:style.iris,emissive:style.iris,emissiveIntensity:1.8});
  part(root,new THREE.SphereGeometry(.46,18,14),hide,"body",[0,.72,0],[1.5,.72,.8]);
  const head=new THREE.Group();head.name="head";head.position.set(0,1.02,.48);root.add(head);part(head,new THREE.SphereGeometry(.3,16,12),hide,"skull",[0,0,0],[1.15,.85,1]);part(head,new THREE.SphereGeometry(.05,12,8),eyes,"eyeL",[-.17,.05,.24]);part(head,new THREE.SphereGeometry(.05,12,8),eyes,"eyeR",[.17,.05,.24]);
  const legs=[];for(const x of [-.32,.32])for(const z of [-.3,.35]){const l=new THREE.Group();l.position.set(x,.62,z);root.add(l);capsule(l,"limb",.11,.42,hide,[0,-.25,0]);legs.push(l)}
@@ -163,7 +169,7 @@ async function createView(host,options={}){
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false,powerPreference:"low-power",depth:true,stencil:false});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));renderer.setSize(Math.max(48,host.clientWidth||88),Math.max(48,host.clientHeight||88),false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;
   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xe9d8c2,0x221820,2));const key=new THREE.DirectionalLight(0xffe0bb,2.2);key.position.set(2,4,4);scene.add(key);const rim=new THREE.PointLight(palette[element]||0xb58b58,2,8);rim.position.set(-2,1.5,-1);scene.add(rim);
   const battlefieldView=host.classList.contains("unit-icon")||host.dataset.characterModel?.startsWith("commander-");const camera=battlefieldView?new THREE.OrthographicCamera(-1.05,1.05,1.05,-1.05,.1,40):new THREE.PerspectiveCamera(31,1,.1,30);if(battlefieldView){camera.position.set(3.4,3.4,5.8);camera.lookAt(0,1.05,0)}else{camera.position.set(1.05,1.75,5.25);camera.lookAt(0,1,0)}
-  const asset=await getAsset(species,element,host.dataset.characterModel,battlefieldView),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element):humanoid(species,element)),baseScale=(options.scale||(battlefieldView?1.38:.9))*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
+  const asset=await getAsset(species,element,host.dataset.characterModel,battlefieldView),root=asset.external?SkeletonUtils.clone(asset.scene):(["Dragon","Monster","Legendary Creature","Beastkin"].includes(species)?beast(species,element,host.dataset.characterModel):humanoid(species,element,host.dataset.characterModel)),baseScale=(options.scale||(battlefieldView?1.38:.9))*(species==="Giant"?1.25:1);root.scale.setScalar(baseScale);scene.add(root);
   const mixer=asset.clips.length?new THREE.AnimationMixer(root):null,actions={};if(mixer)asset.clips.forEach(c=>actions[c.name.toLowerCase()]=mixer.clipAction(c));
   const rig=root.userData.rig||null,particles=[];for(let i=0;i<(battlefieldView?2:3);i++){const p=part(scene,new THREE.SphereGeometry(.018,6,4),new THREE.MeshBasicMaterial({color:palette[element]||0xc5a06a,transparent:true,opacity:.6}),"ambientParticle",[Math.random()*2-1,Math.random()*2.4,Math.random()*1.2-0.6]);particles.push(p)}
   const clock=new THREE.Clock();let raf=0,active=false,state="idle",stateAt=0,selected=false,hovered=false;const blinkPhase=Math.random()*3.2;const eyeMeshes=[];root.traverse(o=>{if(o.isMesh&&/eye/i.test(o.name)){o.userData.baseEyeY=o.scale.y;eyeMeshes.push(o)}});
